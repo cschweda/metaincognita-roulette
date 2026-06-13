@@ -12,7 +12,10 @@ export function runFrequencies(
 ): number[] {
   const rng = mulberry32(seed)
   const counts = new Array<number>(pocketCount(variant)).fill(0)
-  for (let i = 0; i < spins; i++) counts[simulateSpin(rng, variant, cond).index]++
+  for (let i = 0; i < spins; i++) {
+    const idx = simulateSpin(rng, variant, cond).index
+    counts[idx] = (counts[idx] ?? 0) + 1
+  }
   return counts
 }
 

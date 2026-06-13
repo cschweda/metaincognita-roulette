@@ -18,8 +18,8 @@ describe('coverage', () => {
     expect(coverage({ type: 'red', numbers: [], stakeCents: 100 }).size).toBe(18)
     expect([...coverage({ type: 'low', numbers: [], stakeCents: 100 })].sort((a, b) => +a - +b)[0]).toBe(1)
     expect(coverage({ type: 'high', numbers: [], stakeCents: 100 }).has(36)).toBe(true)
-    expect(coverage({ type: 'column', numbers: COLUMNS[0], stakeCents: 100 }).has(34)).toBe(true)
-    expect(coverage({ type: 'dozen', numbers: DOZENS[2], stakeCents: 100 }).has(25)).toBe(true)
+    expect(coverage({ type: 'column', numbers: COLUMNS[0]!, stakeCents: 100 }).has(34)).toBe(true)
+    expect(coverage({ type: 'dozen', numbers: DOZENS[2]!, stakeCents: 100 }).has(25)).toBe(true)
   })
 })
 
