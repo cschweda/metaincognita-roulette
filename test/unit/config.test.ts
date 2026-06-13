@@ -8,7 +8,7 @@ describe('roulette.config', () => {
     expect(rouletteConfig.storage.statsKey).toBe('roulette-training-v1')
   })
   it('exposes rule presets with their house edges', () => {
-    const eu = rouletteConfig.presets.find((p) => p.id === 'european')
+    const eu = rouletteConfig.presets.find(p => p.id === 'european')
     expect(eu).toBeTruthy()
     expect(eu!.variant).toBe('single')
     expect(eu!.evenMoney).toBe('none')

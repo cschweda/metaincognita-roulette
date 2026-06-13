@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { runFrequencies, chiSquare, measureEdge } from './sim'
-import { type Bet, type Rules } from './bets'
-import { type Variant } from './wheel'
+import type { Bet, Rules } from './bets'
+import type { Variant } from './wheel'
 
 const SPINS = 1_000_000
 

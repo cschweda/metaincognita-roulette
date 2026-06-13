@@ -38,7 +38,7 @@ async function startGame() {
     presetId: presetId.value,
     playerName: name.value.trim(),
     bankrollCents: bankrollCents.value,
-    selectedChipCents: rouletteConfig.chips[0]!,
+    selectedChipCents: rouletteConfig.chips[0]!
   })
   await navigateTo('/wheel')
 }

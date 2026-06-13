@@ -4,7 +4,7 @@ import type { Variant } from '../engine/wheel'
 import type { EvenMoneyRule, Bet } from '../engine/bets'
 import {
   SESSION_VERSION, serializeSession, parseSession,
-  type RouletteSession, type SpinRecord, type SessionStats,
+  type RouletteSession, type SpinRecord, type SessionStats
 } from './sessionState'
 
 export type Phase = 'setup' | 'betting' | 'spinning' | 'resolved'
@@ -28,14 +28,14 @@ export const useRouletteStore = defineStore('roulette', {
     bets: [] as Bet[],
     spinHistory: [] as SpinRecord[],
     sessionStats: { spins: 0, wageredCents: 0, netCents: 0 } as SessionStats,
-    storageWarning: false,
+    storageWarning: false
   }),
   getters: {
-    preset: (s) => rouletteConfig.presets.find((p) => p.id === s.presetId) ?? rouletteConfig.presets[0]!,
+    preset: s => rouletteConfig.presets.find(p => p.id === s.presetId) ?? rouletteConfig.presets[0]!
   },
   actions: {
     initializeGame(args: InitArgs) {
-      const preset = rouletteConfig.presets.find((p) => p.id === args.presetId) ?? rouletteConfig.presets[0]!
+      const preset = rouletteConfig.presets.find(p => p.id === args.presetId) ?? rouletteConfig.presets[0]!
       this.presetId = preset.id
       this.variant = preset.variant
       this.evenMoney = preset.evenMoney
@@ -59,7 +59,7 @@ export const useRouletteStore = defineStore('roulette', {
         selectedChipCents: this.selectedChipCents,
         bets: this.bets,
         spinHistory: this.spinHistory,
-        sessionStats: this.sessionStats,
+        sessionStats: this.sessionStats
       }
     },
     saveToLocalStorage() {
@@ -76,7 +76,10 @@ export const useRouletteStore = defineStore('roulette', {
       const raw = localStorage.getItem(rouletteConfig.storage.sessionKey)
       if (!raw) return false
       const session = parseSession(raw)
-      if (!session) { localStorage.removeItem(rouletteConfig.storage.sessionKey); return false }
+      if (!session) {
+        localStorage.removeItem(rouletteConfig.storage.sessionKey)
+        return false
+      }
       this.presetId = session.presetId
       this.variant = session.variant
       this.evenMoney = session.evenMoney
@@ -92,6 +95,6 @@ export const useRouletteStore = defineStore('roulette', {
     clearSession() {
       if (typeof localStorage !== 'undefined') localStorage.removeItem(rouletteConfig.storage.sessionKey)
       this.$reset()
-    },
-  },
+    }
+  }
 })

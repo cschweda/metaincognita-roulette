@@ -5,11 +5,11 @@ import { type Rng, frac } from './prng'
 // wheel uses {} and the §2.4 χ² proof shows it is uniform.
 export interface WheelCondition {
   biasStrength?: number // P(this spin is captured by the favored arc), 0..1
-  biasCenter?: number   // favored arc start index (rotor frame)
-  biasWidth?: number    // favored arc width in pockets
+  biasCenter?: number // favored arc start index (rotor frame)
+  biasWidth?: number // favored arc width in pockets
 }
 
-export interface Spin { index: number; pocket: Pocket }
+export interface Spin { index: number, pocket: Pocket }
 
 // Reduced-order forward model: the ball travels many revolutions (>=4) opposite the
 // rotor, leaves the track near a diamond, and is captured at a rotor-relative angle.
@@ -18,7 +18,7 @@ export interface Spin { index: number; pocket: Pocket }
 // thus the pocket — is ~uniform. Verified by the chi-square proof in sim.test.ts.
 export function simulateSpin(rng: Rng, variant: Variant, cond: WheelCondition = {}): Spin {
   const N = pocketCount(variant)
-  const ballRevs = 7 + rng() * 6   // ~7-13 revolutions (>=4 regulatory floor)
+  const ballRevs = 7 + rng() * 6 // ~7-13 revolutions (>=4 regulatory floor)
   const rotorRevs = 3 + rng() * 5
   // Lab-frame fraction (turns) where the ball leaves the track, pulled toward one of 8 diamonds.
   let dropTurn = frac(ballRevs + rng() * 0.13)

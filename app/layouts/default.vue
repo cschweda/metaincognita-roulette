@@ -47,14 +47,23 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
           class="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-200 transition-colors"
           @click="handleBack"
         >
-          <UIcon name="i-lucide-arrow-left" class="w-3.5 h-3.5" />
+          <UIcon
+            name="i-lucide-arrow-left"
+            class="w-3.5 h-3.5"
+          />
           <span>Back</span>
         </button>
-        <span v-else class="text-xs text-neutral-400 select-none">
+        <span
+          v-else
+          class="text-xs text-neutral-400 select-none"
+        >
           <span class="text-amber-400">Roulette</span> Trainer
         </span>
       </div>
-      <div v-if="hasActiveSession && !isWheel" class="flex items-center gap-1">
+      <div
+        v-if="hasActiveSession && !isWheel"
+        class="flex items-center gap-1"
+      >
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
         <span class="text-[10px] text-neutral-400">Session active</span>
       </div>
@@ -75,7 +84,10 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
             : 'text-neutral-400 hover:text-neutral-200'"
           @click="navigateTo('/history')"
         >
-          <UIcon name="i-lucide-scroll-text" class="w-3.5 h-3.5" />
+          <UIcon
+            name="i-lucide-scroll-text"
+            class="w-3.5 h-3.5"
+          />
           <span>History</span>
         </button>
         <button
@@ -85,7 +97,10 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
             : 'text-neutral-400 hover:text-neutral-200'"
           @click="navigateTo('/analysis')"
         >
-          <UIcon name="i-lucide-chart-no-axes-combined" class="w-3.5 h-3.5" />
+          <UIcon
+            name="i-lucide-chart-no-axes-combined"
+            class="w-3.5 h-3.5"
+          />
           <span>Analysis</span>
         </button>
         <button
@@ -95,7 +110,10 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
             : 'text-neutral-400 hover:text-neutral-200'"
           @click="navigateTo('/learn')"
         >
-          <UIcon name="i-lucide-graduation-cap" class="w-3.5 h-3.5" />
+          <UIcon
+            name="i-lucide-graduation-cap"
+            class="w-3.5 h-3.5"
+          />
           <span>Learn</span>
         </button>
       </div>
@@ -107,7 +125,10 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
           rel="noopener noreferrer"
           class="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-neutral-200 transition-colors"
         >
-          <UIcon name="i-simple-icons-github" class="w-3.5 h-3.5" />
+          <UIcon
+            name="i-simple-icons-github"
+            class="w-3.5 h-3.5"
+          />
           <span>GitHub</span>
         </a>
       </div>
@@ -125,8 +146,17 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
         </p>
       </template>
       <template #footer>
-        <UButton variant="outline" color="neutral" label="Cancel" @click="showLeaveConfirm = false" />
-        <UButton color="error" label="Reset Session" @click="confirmLeave" />
+        <UButton
+          variant="outline"
+          color="neutral"
+          label="Cancel"
+          @click="showLeaveConfirm = false"
+        />
+        <UButton
+          color="error"
+          label="Reset Session"
+          @click="confirmLeave"
+        />
       </template>
     </UModal>
   </div>

@@ -9,13 +9,13 @@
 import { writeFileSync, mkdirSync } from 'node:fs'
 
 const W = 1200, H = 630
-const ACCENT = '#e23744'          // roulette red — the per-game accent
+const ACCENT = '#e23744' // roulette red — the per-game accent
 const GOLD = '#d4a847', CREAM = '#f5f0e1', MUTED = '#9aa6c2'
 const RED = '#c1272d', BLACK = '#1c1c1c', GREEN = '#1b7a43'
 
 // Single-zero wheel order + colors — mirrors app/engine/wheel.ts (Arizona §L / Crown Melbourne Diagram D).
-const ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26]
-const REDS = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36])
+const ORDER = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26]
+const REDS = new Set([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36])
 const colorOf = n => n === 0 ? GREEN : REDS.has(n) ? RED : BLACK
 
 const parts = []
@@ -89,13 +89,13 @@ for (let i = 0; i < N; i++) {
   frets += `<line x1="${pt(ri, a0)[0]}" y1="${pt(ri, a0)[1]}" x2="${fx}" y2="${fy}" stroke="${GOLD}" stroke-opacity="0.55" stroke-width="1"/>`
 }
 p(`<ellipse cx="${cx}" cy="${cy + 8}" rx="${ro + 34}" ry="${ro + 34}" fill="url(#wheelshadow)"/>`)
-p(`<circle cx="${cx}" cy="${cy}" r="${ro + 16}" fill="#2a1c0e"/>`)               // wood rim base
+p(`<circle cx="${cx}" cy="${cy}" r="${ro + 16}" fill="#2a1c0e"/>`) // wood rim base
 p(`<circle cx="${cx}" cy="${cy}" r="${ro + 12}" fill="none" stroke="${GOLD}" stroke-width="6"/>`) // gold rim
-p(`<circle cx="${cx}" cy="${cy}" r="${ro + 2}" fill="#101010"/>`)                 // ball track
+p(`<circle cx="${cx}" cy="${cy}" r="${ro + 2}" fill="#101010"/>`) // ball track
 p(`<g>${wedges}</g><g>${frets}</g>`)
-p(`<circle cx="${cx}" cy="${cy}" r="${ri}" fill="url(#cone)"/>`)                  // center cone
+p(`<circle cx="${cx}" cy="${cy}" r="${ri}" fill="url(#cone)"/>`) // center cone
 p(`<circle cx="${cx}" cy="${cy}" r="40" fill="#3a2c12"/>`)
-p(`<circle cx="${cx}" cy="${cy - 4}" r="16" fill="${GOLD}"/>`)                    // turret
+p(`<circle cx="${cx}" cy="${cy - 4}" r="16" fill="${GOLD}"/>`) // turret
 // the ball, resting in the top pocket, with a soft glow on that fret
 const ballA = rad(-90 + step / 2)
 const [bx, by] = pt(lblR, ballA)

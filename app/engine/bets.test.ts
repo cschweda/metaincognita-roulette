@@ -8,7 +8,7 @@ describe('pay table (Arizona / Melbourne / Colorado — identical)', () => {
   it('pins every payout', () => {
     expect(PAYOUTS).toMatchObject({
       straight: 35, split: 17, street: 11, corner: 8, firstFive: 6, sixline: 5,
-      column: 2, dozen: 2, red: 1, black: 1, odd: 1, even: 1, low: 1, high: 1,
+      column: 2, dozen: 2, red: 1, black: 1, odd: 1, even: 1, low: 1, high: 1
     })
   })
 })

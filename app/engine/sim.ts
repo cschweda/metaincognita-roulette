@@ -8,7 +8,7 @@ export function runFrequencies(
   variant: Variant,
   spins: number,
   seed: number,
-  cond: WheelCondition = {},
+  cond: WheelCondition = {}
 ): number[] {
   const rng = mulberry32(seed)
   const counts = new Array<number>(pocketCount(variant)).fill(0)
@@ -32,7 +32,7 @@ export function measureEdge(
   makeBet: () => Bet,
   rules: Rules,
   spins: number,
-  seed: number,
+  seed: number
 ): number {
   const rng = mulberry32(seed)
   let staked = 0

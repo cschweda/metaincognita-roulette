@@ -6,8 +6,8 @@ export default defineConfig({
     projects: [
       { test: { name: 'unit', include: ['app/engine/**/*.test.ts', 'test/unit/**/*.test.ts'], environment: 'node' } },
       await defineVitestProject({
-        test: { name: 'nuxt', include: ['test/nuxt/**/*.test.ts'], environment: 'nuxt', environmentOptions: { nuxt: { domEnvironment: 'happy-dom' } } },
-      }),
-    ],
-  },
+        test: { name: 'nuxt', include: ['test/nuxt/**/*.test.ts'], environment: 'nuxt', environmentOptions: { nuxt: { domEnvironment: 'happy-dom' } } }
+      })
+    ]
+  }
 })

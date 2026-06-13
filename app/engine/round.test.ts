@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { RouletteGame } from './round'
 import { mulberry32 } from './prng'
 import { simulateSpin } from './physics'
-import { type Rules } from './bets'
+import type { Rules } from './bets'
 
 const EUROPEAN: Rules = { variant: 'single', evenMoney: 'none' }
 
@@ -14,7 +14,7 @@ describe('RouletteGame round machine', () => {
 
     expect(r1.totalStakeCents).toBe(100)
     expect(r1.netCents).toBe(r1.totalReturnCents - 100)
-    expect(r1.events.map((e) => e.type)).toEqual(['no-more-bets', 'ball-settled', 'settled'])
+    expect(r1.events.map(e => e.type)).toEqual(['no-more-bets', 'ball-settled', 'settled'])
   })
 
   it('advances the stream so rounds are not all identical', () => {

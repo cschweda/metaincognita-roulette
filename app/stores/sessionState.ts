@@ -3,8 +3,8 @@ import type { EvenMoneyRule, Bet } from '../engine/bets'
 
 export const SESSION_VERSION = 1 as const
 
-export interface SpinRecord { pocket: Pocket; netCents: number }
-export interface SessionStats { spins: number; wageredCents: number; netCents: number }
+export interface SpinRecord { pocket: Pocket, netCents: number }
+export interface SessionStats { spins: number, wageredCents: number, netCents: number }
 
 export interface RouletteSession {
   version: typeof SESSION_VERSION
@@ -26,7 +26,11 @@ export function serializeSession(s: RouletteSession): string {
 /** Parse + validate + sanitize. Returns null on corrupt/foreign/wrong-version data. */
 export function parseSession(raw: string): RouletteSession | null {
   let data: unknown
-  try { data = JSON.parse(raw) } catch { return null }
+  try {
+    data = JSON.parse(raw)
+  } catch {
+    return null
+  }
   if (typeof data !== 'object' || data === null) return null
   const d = data as Record<string, unknown>
   if (d.version !== SESSION_VERSION) return null

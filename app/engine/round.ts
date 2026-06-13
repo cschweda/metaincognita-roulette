@@ -1,4 +1,4 @@
-import { type Pocket } from './wheel'
+import type { Pocket } from './wheel'
 import { type Rng, mulberry32 } from './prng'
 import { type Bet, type Rules, settleBet } from './bets'
 import { simulateSpin, type WheelCondition } from './physics'
@@ -50,7 +50,7 @@ export class RouletteGame {
       totalStakeCents,
       totalReturnCents,
       netCents: totalReturnCents - totalStakeCents,
-      events,
+      events
     }
   }
 }
