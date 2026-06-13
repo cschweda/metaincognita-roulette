@@ -11,7 +11,7 @@
     "postinstall": "nuxt prepare",
     "clean": "rm -rf node_modules/.vite .nuxt",
     "lint": "eslint .",
-    "typecheck": "nuxt typecheck",
+    "typecheck": "NODE_OPTIONS=--max-old-space-size=8192 nuxt typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:unit": "vitest run --project unit",
