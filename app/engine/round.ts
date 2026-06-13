@@ -3,8 +3,6 @@ import { type Rng, mulberry32 } from './prng'
 import { type Bet, type Rules, settleBet } from './bets'
 import { simulateSpin, type WheelCondition } from './physics'
 
-export type Phase = 'betting' | 'spun' | 'settled'
-
 export interface RoundEvent {
   type: 'no-more-bets' | 'ball-settled' | 'settled'
   pocket?: Pocket
