@@ -1,5 +1,13 @@
+import { defineVitestProject } from '@nuxt/test-utils/config'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  test: { globals: true, include: ['app/**/*.test.ts'] },
+  test: {
+    projects: [
+      { test: { name: 'unit', include: ['app/engine/**/*.test.ts', 'test/unit/**/*.test.ts'], environment: 'node' } },
+      await defineVitestProject({
+        test: { name: 'nuxt', include: ['test/nuxt/**/*.test.ts'], environment: 'nuxt', environmentOptions: { nuxt: { domEnvironment: 'happy-dom' } } },
+      }),
+    ],
+  },
 })
