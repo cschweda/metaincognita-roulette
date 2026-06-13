@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, monospace;
+}
+
+/* Shared Metaincognita casino-luxury tokens (design-system.md). */
+:root {
+  --felt: #0a5c36;
+  --felt-dark: #073d24;
+  --walnut: #3a2417;
+  --gold: #d4a847;
+  --cream: #f5f0e1;
+  --chip-white: #f5f0e1;
+  --chip-red: #c1272d;
+  --chip-green: #1b7a43;
+  --chip-black: #1a1a1a;
+  --chip-purple: #6d28d9;
+}
