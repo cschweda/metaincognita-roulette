@@ -39,11 +39,11 @@ const stakes = rouletteConfig.stakes
         </div>
         <div class="space-y-1 text-xs text-neutral-400">
           <div>
-            <span class="text-neutral-500">Bets:</span>
+            <span class="text-neutral-400">Bets:</span>
             {{ formatCents(stake.minBetCents) }} – {{ formatCents(stake.maxBetCents) }}
           </div>
           <div>
-            <span class="text-neutral-500">Bankroll:</span>
+            <span class="text-neutral-400">Bankroll:</span>
             <span class="text-emerald-400"> {{ formatCents(stake.defaultBankrollCents) }}</span>
           </div>
         </div>

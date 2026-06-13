@@ -65,7 +65,7 @@ watch(() => props.defaultBankrollCents, () => {
           {{ formatCents(bankrollCents) }}
         </span>
       </div>
-      <p class="text-xs text-neutral-500 mt-1">
+      <p class="text-xs text-neutral-400 mt-1">
         {{ formatCents(minBankroll) }} – {{ formatCents(maxBankroll) }}
       </p>
     </UFormField>

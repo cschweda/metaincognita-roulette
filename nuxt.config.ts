@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   colorMode: { preference: 'dark', fallback: 'dark' },
   app: {
     head: {
+      htmlAttrs: { lang: 'en' },
       title: 'Roulette Trainer',
       meta: [
         { name: 'description', content: 'A visual, accurate roulette trainer with a real forward-physics wheel — proven fair by simulation.' },

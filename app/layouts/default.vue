@@ -50,20 +50,20 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
           <UIcon name="i-lucide-arrow-left" class="w-3.5 h-3.5" />
           <span>Back</span>
         </button>
-        <span v-else class="text-xs text-neutral-600 select-none">
-          <span class="text-amber-500/60">Roulette</span> Trainer
+        <span v-else class="text-xs text-neutral-400 select-none">
+          <span class="text-amber-400">Roulette</span> Trainer
         </span>
       </div>
       <div v-if="hasActiveSession && !isWheel" class="flex items-center gap-1">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        <span class="text-[10px] text-neutral-500">Session active</span>
+        <span class="text-[10px] text-neutral-400">Session active</span>
       </div>
     </nav>
 
     <!-- Page content -->
-    <div class="flex-1 flex flex-col min-h-0">
+    <main class="flex-1 flex flex-col min-h-0">
       <slot />
-    </div>
+    </main>
 
     <!-- Bottom status bar -->
     <nav class="h-9 flex items-center justify-between px-3 bg-neutral-900 border-t border-neutral-800 shrink-0 z-50">
@@ -72,7 +72,7 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
           class="flex items-center gap-1.5 text-xs transition-colors"
           :class="route.path === '/history'
             ? 'text-amber-400'
-            : 'text-neutral-500 hover:text-neutral-300'"
+            : 'text-neutral-400 hover:text-neutral-200'"
           @click="navigateTo('/history')"
         >
           <UIcon name="i-lucide-scroll-text" class="w-3.5 h-3.5" />
@@ -82,7 +82,7 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
           class="flex items-center gap-1.5 text-xs transition-colors"
           :class="route.path === '/analysis'
             ? 'text-amber-400'
-            : 'text-neutral-500 hover:text-neutral-300'"
+            : 'text-neutral-400 hover:text-neutral-200'"
           @click="navigateTo('/analysis')"
         >
           <UIcon name="i-lucide-chart-no-axes-combined" class="w-3.5 h-3.5" />
@@ -92,7 +92,7 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
           class="flex items-center gap-1.5 text-xs transition-colors"
           :class="route.path === '/learn'
             ? 'text-amber-400'
-            : 'text-neutral-500 hover:text-neutral-300'"
+            : 'text-neutral-400 hover:text-neutral-200'"
           @click="navigateTo('/learn')"
         >
           <UIcon name="i-lucide-graduation-cap" class="w-3.5 h-3.5" />
@@ -100,12 +100,12 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
         </button>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-[10px] text-neutral-600">v0.1.0</span>
+        <span class="text-[10px] text-neutral-400">v0.1.0</span>
         <a
           href="https://github.com/cschweda/metaincognita-roulette"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
+          class="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-neutral-200 transition-colors"
         >
           <UIcon name="i-simple-icons-github" class="w-3.5 h-3.5" />
           <span>GitHub</span>

@@ -57,7 +57,7 @@ async function resumeSession() {
           <span class="text-primary-400">Roulette</span>
           <span class="text-neutral-300"> Trainer</span>
         </h1>
-        <p class="text-neutral-500 text-sm">
+        <p class="text-neutral-400 text-sm">
           Pick your table rules, choose your stakes, and take your seat.
         </p>
       </div>
@@ -115,7 +115,7 @@ async function resumeSession() {
       </div>
 
       <!-- Footer note -->
-      <p class="text-center text-neutral-600 text-xs">
+      <p class="text-center text-neutral-400 text-xs">
         All amounts are for simulation purposes only. No real money is involved.
       </p>
     </div>
