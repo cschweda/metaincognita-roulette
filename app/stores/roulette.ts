@@ -44,6 +44,7 @@ export const useRouletteStore = defineStore('roulette', {
     bets: [] as Bet[],
     spinHistory: [] as SpinRecord[],
     sessionStats: { spins: 0, wageredCents: 0, netCents: 0 } as SessionStats,
+    bankrollHistory: [] as number[],
     lastRoundBets: [] as Bet[],
     storageWarning: false,
     game: null as RouletteGame | null,
@@ -65,6 +66,7 @@ export const useRouletteStore = defineStore('roulette', {
       this.bets = []
       this.spinHistory = []
       this.sessionStats = { spins: 0, wageredCents: 0, netCents: 0 }
+      this.bankrollHistory = [args.bankrollCents]
       this.game = markRaw(new RouletteGame({ variant: preset.variant, evenMoney: preset.evenMoney }, seed ?? cryptoSeed()))
       this.revealPocket = null
       this.phase = 'betting'
@@ -81,7 +83,8 @@ export const useRouletteStore = defineStore('roulette', {
         selectedChipCents: this.selectedChipCents,
         bets: this.bets,
         spinHistory: this.spinHistory,
-        sessionStats: this.sessionStats
+        sessionStats: this.sessionStats,
+        bankrollHistory: this.bankrollHistory
       }
     },
     saveToLocalStorage() {
@@ -111,6 +114,7 @@ export const useRouletteStore = defineStore('roulette', {
       this.bets = session.bets
       this.spinHistory = session.spinHistory
       this.sessionStats = session.sessionStats
+      this.bankrollHistory = session.bankrollHistory
       this.game = markRaw(new RouletteGame({ variant: this.variant, evenMoney: this.evenMoney }, cryptoSeed()))
       this.phase = 'betting'
       return true
@@ -127,6 +131,8 @@ export const useRouletteStore = defineStore('roulette', {
     },
     commitSpin(result: RoundResult) {
       this.bankrollCents += result.totalReturnCents
+      this.bankrollHistory.push(this.bankrollCents)
+      this.bankrollHistory = this.bankrollHistory.slice(-60)
       this.spinHistory.unshift({ pocket: result.pocket, netCents: result.netCents })
       this.spinHistory = this.spinHistory.slice(0, 50)
       this.sessionStats.spins += 1

@@ -17,6 +17,7 @@ export interface RouletteSession {
   bets: Bet[]
   spinHistory: SpinRecord[]
   sessionStats: SessionStats
+  bankrollHistory: number[]
 }
 
 export function serializeSession(s: RouletteSession): string {
@@ -40,5 +41,7 @@ export function parseSession(raw: string): RouletteSession | null {
   if (typeof d.variant !== 'string' || typeof d.evenMoney !== 'string') return null
   if (typeof d.selectedChipCents !== 'number') return null
   if (typeof d.sessionStats !== 'object' || d.sessionStats === null) return null
-  return data as RouletteSession
+  const session = data as RouletteSession
+  if (!Array.isArray(session.bankrollHistory)) session.bankrollHistory = []
+  return session
 }

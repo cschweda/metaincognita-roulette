@@ -30,7 +30,7 @@
           ref="wheelRef"
           :variant="store.variant"
           :reduced-motion="reducedMotion"
-          :size="420"
+          :size="380"
         />
         <ResultBadge
           :latest="store.revealPocket"
@@ -48,6 +48,7 @@
             {{ lastNet < 0 ? 'Lost ' + formatCents(-lastNet) : 'No win' }}
           </template>
         </div>
+        <StatsPanel />
       </div>
 
       <!-- Right: the betting layout -->
@@ -85,6 +86,7 @@ import ResultBadge from '~/components/wheel/ResultBadge.vue'
 import RouletteMat from '~/components/wheel/RouletteMat.vue'
 import ChipTray from '~/components/wheel/ChipTray.vue'
 import BetControls from '~/components/wheel/BetControls.vue'
+import StatsPanel from '~/components/wheel/StatsPanel.vue'
 
 const store = useRouletteStore()
 const wheelRef = ref<{ spinTo: (p: Pocket) => Promise<void> } | null>(null)

@@ -11,7 +11,8 @@ const sample: RouletteSession = {
   selectedChipCents: 500,
   bets: [],
   spinHistory: [],
-  sessionStats: { spins: 0, wageredCents: 0, netCents: 0 }
+  sessionStats: { spins: 0, wageredCents: 0, netCents: 0 },
+  bankrollHistory: []
 }
 
 describe('session persistence (versioned)', () => {
@@ -27,5 +28,11 @@ describe('session persistence (versioned)', () => {
   })
   it('rejects a structurally-invalid blob', () => {
     expect(parseSession(JSON.stringify({ version: 1 }))).toBeNull()
+  })
+  it('defaults bankrollHistory to [] when missing (back-compat)', () => {
+    const { bankrollHistory, ...withoutBH } = sample
+    const restored = parseSession(JSON.stringify(withoutBH))
+    expect(restored).not.toBeNull()
+    expect(restored!.bankrollHistory).toEqual([])
   })
 })
