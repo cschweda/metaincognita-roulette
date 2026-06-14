@@ -1,0 +1,70 @@
+<div style="
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: #020617;
+  z-index: 99999;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+">
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+    <div style="
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #71717a;
+      text-transform: uppercase;
+      font-weight: 500;
+    ">METAINCOGNITA</div>
+    <div style="
+      font-size: 28px;
+      font-weight: 700;
+      color: #f43f5e;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    ">Roulette</div>
+    <div style="
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #52525b;
+      text-transform: uppercase;
+    ">Trainer</div>
+  </div>
+
+  <div style="
+    width: 48px;
+    height: 48px;
+    border: 3px solid #27272a;
+    border-top-color: #f43f5e;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  "></div>
+
+  <div style="
+    width: 100px;
+    height: 2px;
+    background: #18181b;
+    border-radius: 1px;
+    overflow: hidden;
+  ">
+    <div style="
+      width: 40px;
+      height: 2px;
+      background: #e11d48;
+      border-radius: 1px;
+      animation: slide 1s ease-in-out infinite;
+    "></div>
+  </div>
+
+  <style>
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes slide {
+      0%   { transform: translateX(-40px); }
+      100% { transform: translateX(100px); }
+    }
+  </style>
+</div>
