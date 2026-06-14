@@ -7,11 +7,8 @@
       />
       <span class="text-[11px] uppercase tracking-wide text-neutral-400">Expected value</span>
     </div>
-    <div class="text-[11px] text-neutral-400 mb-1.5">
-      House edge: <span class="font-mono text-neutral-300">{{ store.preset.edgePct.toFixed(2) }}%</span>
-    </div>
     <template v-if="store.bets.length > 0">
-      <ul class="text-[12px] text-neutral-300 leading-snug mb-1.5 max-h-[88px] overflow-y-auto space-y-0.5">
+      <ul class="text-[12px] text-neutral-300 leading-snug mb-1.5 max-h-[72px] overflow-y-auto space-y-0.5">
         <li
           v-for="(bet, i) in store.bets"
           :key="`${bet.type}-${bet.numbers.join('_')}-${i}`"
@@ -20,18 +17,20 @@
         </li>
       </ul>
       <div class="text-[12px] text-neutral-300 leading-snug">
-        On this <span class="font-mono">{{ formatCents(totalStakeCents) }}</span> you're staking,
-        the house expects to keep
+        The house keeps
         <span class="font-mono text-rose-400 font-semibold">{{ formatCents(Math.round(-evCents)) }}</span>
+        of your <span class="font-mono">{{ formatCents(totalStakeCents) }}</span>
         <span class="text-neutral-400">({{ lossPct }}%)</span>.
       </div>
     </template>
-    <div
-      v-else
-      class="text-[12px] text-neutral-400"
-    >
-      Place a bet to see its expected cost.
-    </div>
+    <template v-else>
+      <div class="text-[11px] text-neutral-400 mb-1">
+        House edge: <span class="font-mono text-neutral-300">{{ store.preset.edgePct.toFixed(2) }}%</span>
+      </div>
+      <div class="text-[12px] text-neutral-400">
+        Place a bet to see what it pays and its expected cost.
+      </div>
+    </template>
   </div>
 </template>
 

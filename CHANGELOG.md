@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A subtle **"ready to spin" pulse** on the Spin button when a bet is placed and a spin is possible (absolutely positioned — no button or layout shift).
 - An **out-of-chips modal** when the bankroll hits $0 — buy more chips (re-buy the original buy-in, the loss still stands in your net), start a new session, or save the session to CSV and review it.
 - The betting mat now **lights up every number a live bet covers**, additive across bets — bet Red and the red slots glow; add Even and the even slots join.
+- **Inside combination bets** — splits, streets, corners, six-lines, and the American First Five — are now placeable on the mat (click or drag) via on-the-line hotspots, matching the bets the engine already prices.
+- A **plain-language bet explainer** in the Expected Value card: every bet shows what it pays, the win amount, and the odds — e.g. "Black — pays 1:1, wins $5 if it hits (18 of 38)".
 
 ### Changed
 
