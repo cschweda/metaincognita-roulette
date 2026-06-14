@@ -7,7 +7,7 @@
         <button
           type="button"
           class="cell cell-green"
-          :class="{ 'cell-single-zero': variant === 'single' }"
+          :class="{ 'cell-single-zero': variant === 'single', 'covered': isCovered(0) }"
           data-zone="straight:0"
           aria-label="Straight up 0"
           @click="place('straight', [0])"
@@ -22,6 +22,7 @@
           v-if="variant === 'double'"
           type="button"
           class="cell cell-green cell-double-zero"
+          :class="{ covered: isCovered('00') }"
           data-zone="straight:00"
           aria-label="Straight up 00"
           @click="place('straight', ['00'])"
@@ -46,7 +47,7 @@
             :key="row"
             type="button"
             class="cell"
-            :class="numClass(col * 3 - (3 - row))"
+            :class="[numClass(col * 3 - (3 - row)), { covered: isCovered(col * 3 - (3 - row)) }]"
             :data-zone="`straight:${col * 3 - (3 - row)}`"
             :aria-label="`Straight up ${col * 3 - (3 - row)}`"
             @click="place('straight', [col * 3 - (3 - row)])"
@@ -246,8 +247,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { colorOf, type Pocket } from '~/engine/wheel'
-import { COLUMNS, DOZENS, type BetType } from '~/engine/bets'
+import { COLUMNS, DOZENS, coverage, type BetType } from '~/engine/bets'
 import { formatCents } from '~/utils/format'
 
 const props = defineProps<{
@@ -291,6 +293,18 @@ const COLOR_CLASS: Record<string, string> = {
 
 function numClass(n: number): string {
   return COLOR_CLASS[colorOf(n)] ?? 'cell-black'
+}
+
+// Union of every pocket the current bets cover — so the mat lights up what's in play.
+const coveredPockets = computed(() => {
+  const s = new Set<string>()
+  for (const bet of props.bets) {
+    for (const p of coverage(bet)) s.add(String(p))
+  }
+  return s
+})
+function isCovered(n: Pocket): boolean {
+  return coveredPockets.value.has(String(n))
 }
 </script>
 
@@ -382,6 +396,12 @@ function numClass(n: number): string {
   outline: 3px solid var(--gold, #d4a847);
   outline-offset: -3px;
   z-index: 4;
+}
+
+/* A covered number — lit up to show it's part of a live bet */
+.cell.covered {
+  box-shadow: inset 0 0 0 2px var(--gold, #d4a847), 0 0 7px rgba(212, 168, 71, 0.45);
+  z-index: 2;
 }
 
 /* Number cell colors */

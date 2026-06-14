@@ -12,13 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A **"Last spin" breakdown card** in the play-screen dashboard — a per-bet, won/lost summary (each bet's label, net, and the winning pocket) so it's obvious *why* you won or lost.
 - A subtle **"ready to spin" pulse** on the Spin button when a bet is placed and a spin is possible (absolutely positioned — no button or layout shift).
 - An **out-of-chips modal** when the bankroll hits $0 — buy more chips (re-buy the original buy-in, the loss still stands in your net), start a new session, or save the session to CSV and review it.
+- The betting mat now **lights up every number a live bet covers**, additive across bets — bet Red and the red slots glow; add Even and the even slots join.
 
 ### Changed
 
 - The **Spin button** is now high-contrast casino gold instead of pink.
 - Enlarged the **Staked** total and the ready-to-spin pulse for at-a-glance visibility.
 - The ball clatters more visibly over the wheel deflectors as it settles.
-- Moved the visual chip stack ("Your stack") beside the chip tray to save vertical space.
+- Moved the visual chip stack ("Your stack") beside the Spin button.
 
 ## [0.1.0] — 2026-06-14
 

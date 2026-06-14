@@ -55,12 +55,20 @@
             :bets="store.bets"
             @place="onPlace"
           />
+          <ChipTray
+            :selected="store.selectedChipCents"
+            :max-cents="store.bankrollCents"
+            @select="store.setSelectedChip"
+            @dragstart="(p) => dragStart(p.cents, p.ev)"
+          />
           <div class="flex items-center justify-center gap-5">
-            <ChipTray
-              :selected="store.selectedChipCents"
-              :max-cents="store.bankrollCents"
-              @select="store.setSelectedChip"
-              @dragstart="(p) => dragStart(p.cents, p.ev)"
+            <BetControls
+              :spinning="store.phase === 'spinning'"
+              :total-staked="store.totalStakedCents"
+              :can-repeat="store.lastRoundBets.length > 0"
+              @spin="spin"
+              @clear="store.clearBets"
+              @repeat="onRepeat"
             />
             <div class="flex flex-col items-center gap-1">
               <span class="text-[10px] uppercase tracking-wide text-neutral-400">Your stack</span>
@@ -70,14 +78,6 @@
               />
             </div>
           </div>
-          <BetControls
-            :spinning="store.phase === 'spinning'"
-            :total-staked="store.totalStakedCents"
-            :can-repeat="store.lastRoundBets.length > 0"
-            @spin="spin"
-            @clear="store.clearBets"
-            @repeat="onRepeat"
-          />
         </div>
       </div>
 
