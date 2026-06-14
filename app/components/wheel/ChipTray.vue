@@ -10,11 +10,12 @@
       type="button"
       class="chip"
       :class="chipClass(c)"
-      :aria-label="'Chip ' + formatCents(c)"
+      :disabled="c > maxCents"
+      :aria-label="'Chip ' + formatCents(c) + (c > maxCents ? ' (more than your bankroll)' : '')"
       :aria-pressed="c === selected"
       style="touch-action: none"
       @click="emit('select', c)"
-      @pointerdown="(ev) => emit('dragstart', { cents: c, ev })"
+      @pointerdown="(ev) => { if (c <= maxCents) emit('dragstart', { cents: c, ev }) }"
     >
       {{ formatCents(c) }}
     </button>
@@ -27,6 +28,7 @@ import { formatCents } from '~/utils/format'
 
 const props = defineProps<{
   selected: number
+  maxCents: number
 }>()
 
 const emit = defineEmits<{
@@ -38,7 +40,8 @@ const chips = rouletteConfig.chips as readonly number[]
 
 function chipClass(cents: number): Record<string, boolean> {
   return {
-    'chip-selected': cents === props.selected,
+    'chip-selected': cents === props.selected && cents <= props.maxCents,
+    'chip-disabled': cents > props.maxCents,
     'chip-white': cents === 100,
     'chip-red': cents === 500,
     'chip-green': cents === 2_500,
@@ -84,6 +87,15 @@ function chipClass(cents: number): Record<string, boolean> {
 .chip:focus-visible {
   outline: 2px solid var(--gold, #d4a847);
   outline-offset: 2px;
+}
+
+.chip-disabled,
+.chip-disabled:hover {
+  opacity: 0.3;
+  filter: grayscale(0.65);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .chip-selected {

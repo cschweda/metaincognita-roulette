@@ -67,6 +67,7 @@
         />
         <ChipTray
           :selected="store.selectedChipCents"
+          :max-cents="store.bankrollCents"
           @select="store.setSelectedChip"
           @dragstart="(p) => dragStart(p.cents, p.ev)"
         />

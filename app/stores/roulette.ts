@@ -126,6 +126,7 @@ export const useRouletteStore = defineStore('roulette', {
       this.wheelCondition = session.wheelCondition
       this.sessionLog = session.sessionLog
       this.game = markRaw(new RouletteGame({ variant: this.variant, evenMoney: this.evenMoney }, cryptoSeed(), session.wheelCondition))
+      this.clampSelectedChip()
       this.phase = 'betting'
       return true
     },
@@ -161,6 +162,7 @@ export const useRouletteStore = defineStore('roulette', {
       this.lastRoundBets = this.bets
       this.bets = []
       this.phase = 'resolved'
+      this.clampSelectedChip()
       this.saveToLocalStorage()
     },
     placeBet(descriptor: { type: BetType, numbers: Pocket[] }, stakeCents: number): boolean {
@@ -174,6 +176,7 @@ export const useRouletteStore = defineStore('roulette', {
       if (existing) existing.stakeCents += stakeCents
       else this.bets.push({ type: descriptor.type, numbers: [...descriptor.numbers], stakeCents })
       this.bankrollCents -= stakeCents
+      this.clampSelectedChip()
       this.saveToLocalStorage()
       return true
     },
@@ -190,7 +193,15 @@ export const useRouletteStore = defineStore('roulette', {
       return true
     },
     setSelectedChip(cents: number) {
+      if (cents > this.bankrollCents) return
       this.selectedChipCents = cents
+    },
+    /** Keep the selected chip affordable: if the bankroll has dropped below it,
+     *  fall back to the largest configured chip we can still cover (or 0 if broke). */
+    clampSelectedChip() {
+      if (this.selectedChipCents <= this.bankrollCents) return
+      const affordable = (rouletteConfig.chips as readonly number[]).filter(c => c <= this.bankrollCents)
+      this.selectedChipCents = affordable.length ? Math.max(...affordable) : 0
     },
     readyForNextSpin() {
       this.phase = 'betting'
