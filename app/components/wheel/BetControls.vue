@@ -72,14 +72,15 @@ const emit = defineEmits<{
 }
 
 .staked-readout {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--cream, #f5e6c8);
-  opacity: 0.75;
+  opacity: 0.9;
 }
 
 .staked-amount {
   font-family: var(--font-mono, 'Fira Code', monospace);
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 22px;
   opacity: 1;
   color: var(--gold, #d4a847);
 }
@@ -103,33 +104,35 @@ const emit = defineEmits<{
 
 .spin-ready-dot {
   position: absolute;
-  right: 16px;
+  right: 18px;
   top: 50%;
-  width: 8px;
-  height: 8px;
-  margin-top: -4px;
+  width: 11px;
+  height: 11px;
+  margin-top: -5.5px;
   border-radius: 50%;
-  background: rgba(42, 29, 5, 0.85);
-  animation: spin-ready 1.8s ease-in-out infinite;
+  background: #2a1d05;
+  animation: spin-ready 1.5s ease-out infinite;
   pointer-events: none;
 }
 
 @keyframes spin-ready {
-  0%, 100% {
-    opacity: 0.25;
-    transform: scale(0.85);
+  0% {
+    box-shadow: 0 0 0 0 rgba(42, 29, 5, 0.55);
   }
 
-  50% {
-    opacity: 0.95;
-    transform: scale(1);
+  70% {
+    box-shadow: 0 0 0 9px rgba(42, 29, 5, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(42, 29, 5, 0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .spin-ready-dot {
     animation: none;
-    opacity: 0.7;
+    box-shadow: 0 0 0 3px rgba(42, 29, 5, 0.2);
   }
 }
 
