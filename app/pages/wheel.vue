@@ -21,29 +21,57 @@
       </div>
     </header>
     <div
-      class="flex-1 flex flex-col items-center justify-center gap-4"
+      class="flex-1 flex flex-col items-center justify-center gap-5 py-4"
       :style="{ background: 'var(--felt-dark)' }"
     >
-      <p class="text-neutral-300/80 text-sm">
-        Wheel &amp; betting mat arrive in Plans 2b–2c.
-      </p>
+      <RouletteWheel
+        ref="wheelRef"
+        :variant="store.variant"
+        :reduced-motion="reducedMotion"
+        :size="460"
+      />
+      <ResultBadge
+        :latest="store.revealPocket"
+        :history="historyPockets"
+      />
       <UButton
         color="primary"
-        disabled
+        size="lg"
+        :loading="store.phase === 'spinning'"
+        :disabled="store.phase === 'spinning'"
+        @click="spin"
       >
-        Spin
+        {{ store.phase === 'spinning' ? 'Spinning…' : 'Spin' }}
       </UButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouletteStore } from '~/stores/roulette'
 import { formatCents } from '~/utils/format'
+import type { Pocket } from '~/engine/wheel'
 
 const store = useRouletteStore()
+const wheelRef = ref<{ spinTo: (p: Pocket) => Promise<void> } | null>(null)
+const reducedMotion = ref(false)
+const historyPockets = computed(() => store.spinHistory.map(s => s.pocket))
+
 onMounted(() => {
-  if (store.phase === 'setup' && !store.loadFromLocalStorage()) navigateTo('/')
+  if (store.phase === 'setup' && !store.loadFromLocalStorage()) {
+    navigateTo('/')
+    return
+  }
+  reducedMotion.value = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 })
+
+async function spin() {
+  if (store.phase === 'spinning' || !wheelRef.value) return
+  const result = store.computeSpin() // engine decides (source of truth)
+  await wheelRef.value.spinTo(result.pocket) // wheel replays it; resolves at rest
+  store.commitSpin(result) // reveal now, paced with the animation
+  store.readyForNextSpin()
+}
 </script>
