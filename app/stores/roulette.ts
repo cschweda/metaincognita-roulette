@@ -1,13 +1,22 @@
 import { defineStore } from 'pinia'
+import { markRaw } from 'vue'
 import { rouletteConfig } from '../../roulette.config'
-import type { Variant } from '../engine/wheel'
+import type { Variant, Pocket } from '../engine/wheel'
 import type { EvenMoneyRule, Bet } from '../engine/bets'
+import { RouletteGame, type RoundResult } from '../engine/round'
 import {
   SESSION_VERSION, serializeSession, parseSession,
   type RouletteSession, type SpinRecord, type SessionStats
 } from './sessionState'
 
 export type Phase = 'setup' | 'betting' | 'spinning' | 'resolved'
+
+function cryptoSeed(): number {
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    return crypto.getRandomValues(new Uint32Array(1))[0]!
+  }
+  return Math.floor(Math.random() * 0xffffffff) >>> 0
+}
 
 interface InitArgs {
   presetId: string
@@ -28,13 +37,15 @@ export const useRouletteStore = defineStore('roulette', {
     bets: [] as Bet[],
     spinHistory: [] as SpinRecord[],
     sessionStats: { spins: 0, wageredCents: 0, netCents: 0 } as SessionStats,
-    storageWarning: false
+    storageWarning: false,
+    game: null as RouletteGame | null,
+    revealPocket: null as Pocket | null
   }),
   getters: {
     preset: s => rouletteConfig.presets.find(p => p.id === s.presetId) ?? rouletteConfig.presets[0]!
   },
   actions: {
-    initializeGame(args: InitArgs) {
+    initializeGame(args: InitArgs, seed?: number) {
       const preset = rouletteConfig.presets.find(p => p.id === args.presetId) ?? rouletteConfig.presets[0]!
       this.presetId = preset.id
       this.variant = preset.variant
@@ -45,6 +56,8 @@ export const useRouletteStore = defineStore('roulette', {
       this.bets = []
       this.spinHistory = []
       this.sessionStats = { spins: 0, wageredCents: 0, netCents: 0 }
+      this.game = markRaw(new RouletteGame({ variant: preset.variant, evenMoney: preset.evenMoney }, seed ?? cryptoSeed()))
+      this.revealPocket = null
       this.phase = 'betting'
       this.saveToLocalStorage()
     },
@@ -89,12 +102,33 @@ export const useRouletteStore = defineStore('roulette', {
       this.bets = session.bets
       this.spinHistory = session.spinHistory
       this.sessionStats = session.sessionStats
+      this.game = markRaw(new RouletteGame({ variant: this.variant, evenMoney: this.evenMoney }, cryptoSeed()))
       this.phase = 'betting'
       return true
     },
     clearSession() {
       if (typeof localStorage !== 'undefined') localStorage.removeItem(rouletteConfig.storage.sessionKey)
       this.$reset()
+    },
+    computeSpin(): RoundResult {
+      if (!this.game) throw new Error('no game in progress')
+      this.phase = 'spinning'
+      this.revealPocket = null
+      return this.game.playRound(this.bets)
+    },
+    commitSpin(result: RoundResult) {
+      this.bankrollCents += result.netCents
+      this.spinHistory.unshift({ pocket: result.pocket, netCents: result.netCents })
+      this.spinHistory = this.spinHistory.slice(0, 50)
+      this.sessionStats.spins += 1
+      this.sessionStats.wageredCents += result.totalStakeCents
+      this.sessionStats.netCents += result.netCents
+      this.revealPocket = result.pocket
+      this.phase = 'resolved'
+      this.saveToLocalStorage()
+    },
+    readyForNextSpin() {
+      this.phase = 'betting'
     }
   }
 })
