@@ -32,10 +32,16 @@
           :reduced-motion="reducedMotion"
           :size="380"
         />
-        <ResultBadge
-          :latest="store.revealPocket"
-          :history="historyPockets"
-        />
+        <div class="flex items-center justify-center gap-5">
+          <BankrollStack
+            :bankroll-cents="store.bankrollCents"
+            :starting-cents="startingCents"
+          />
+          <ResultBadge
+            :latest="store.revealPocket"
+            :history="historyPockets"
+          />
+        </div>
         <div
           v-if="lastNet !== null && store.phase !== 'spinning'"
           class="win-loss-banner"
@@ -95,6 +101,7 @@ import RouletteMat from '~/components/wheel/RouletteMat.vue'
 import ChipTray from '~/components/wheel/ChipTray.vue'
 import BetControls from '~/components/wheel/BetControls.vue'
 import StatsPanel from '~/components/wheel/StatsPanel.vue'
+import BankrollStack from '~/components/wheel/BankrollStack.vue'
 
 const store = useRouletteStore()
 const { dragging: dragActive, chipCents: dragChipCents, x: dragX, y: dragY, start: dragStart } = useChipDrag((descriptor, cents) => {
@@ -105,6 +112,7 @@ const wheelRef = ref<{ spinTo: (p: Pocket) => Promise<void> } | null>(null)
 const reducedMotion = ref(false)
 const historyPockets = computed(() => store.spinHistory.map(s => s.pocket))
 const lastNet = ref<number | null>(null)
+const startingCents = computed(() => store.bankrollHistory[0] ?? store.bankrollCents)
 
 onMounted(() => {
   if (store.phase === 'setup' && !store.loadFromLocalStorage()) {
