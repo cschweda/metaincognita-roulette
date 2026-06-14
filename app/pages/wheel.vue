@@ -6,17 +6,24 @@
     >
       Storage is full — playing in memory only; this session won't be saved.
     </div>
-    <header class="flex items-center justify-between px-4 py-2 border-b border-neutral-800">
-      <div class="text-sm text-neutral-300">
+    <header class="flex items-center justify-between gap-3 px-4 py-2 border-b border-neutral-800">
+      <div class="text-sm text-neutral-300 flex-1 min-w-0 truncate">
         {{ store.playerName }}
       </div>
-      <div
-        class="font-mono text-lg"
-        :style="{ color: 'var(--cream)' }"
-      >
-        {{ formatCents(store.bankrollCents) }}
+      <div class="flex items-center gap-3 shrink-0">
+        <span
+          class="font-mono text-lg"
+          :style="{ color: 'var(--cream)' }"
+        >
+          {{ formatCents(store.bankrollCents) }}
+        </span>
+        <span
+          class="result-pill"
+          :class="'tone-' + resultTone"
+          :aria-live="resultTone === 'none' ? 'off' : 'polite'"
+        >{{ resultText }}</span>
       </div>
-      <div class="text-xs text-neutral-400">
+      <div class="text-xs text-neutral-400 flex-1 min-w-0 text-right">
         {{ store.preset.label }} · <span class="font-mono text-primary-400">{{ store.preset.edgePct.toFixed(2) }}%</span>
       </div>
     </header>
@@ -43,18 +50,6 @@
               :latest="store.revealPocket"
               :history="historyPockets"
             />
-          </div>
-          <div
-            v-if="lastNet !== null && store.phase !== 'spinning'"
-            class="win-loss-banner"
-            :class="lastNet > 0 ? 'banner-win' : 'banner-neutral'"
-          >
-            <template v-if="lastNet > 0">
-              Won {{ formatCents(lastNet) }}
-            </template>
-            <template v-else>
-              {{ lastNet < 0 ? 'Lost ' + formatCents(-lastNet) : 'No win' }}
-            </template>
           </div>
         </div>
 
@@ -124,6 +119,19 @@ const historyPockets = computed(() => store.spinHistory.map(s => s.pocket))
 const lastNet = ref<number | null>(null)
 const startingCents = computed(() => store.bankrollHistory[0] ?? store.bankrollCents)
 
+const resultTone = computed<'none' | 'win' | 'loss' | 'neutral'>(() => {
+  if (lastNet.value === null || store.phase === 'spinning') return 'none'
+  if (lastNet.value > 0) return 'win'
+  if (lastNet.value < 0) return 'loss'
+  return 'neutral'
+})
+const resultText = computed(() => {
+  if (resultTone.value === 'none') return ''
+  if (resultTone.value === 'win') return 'Won ' + formatCents(lastNet.value!)
+  if (resultTone.value === 'loss') return 'Lost ' + formatCents(-lastNet.value!)
+  return 'No win'
+})
+
 onMounted(() => {
   if (store.phase === 'setup' && !store.loadFromLocalStorage()) {
     navigateTo('/')
@@ -149,24 +157,41 @@ async function spin() {
 </script>
 
 <style scoped>
-.win-loss-banner {
-  font-size: 15px;
-  font-weight: 700;
+.result-pill {
+  min-width: 104px;
+  text-align: center;
   font-family: var(--font-mono, 'Fira Code', monospace);
-  padding: 6px 20px;
-  border-radius: 6px;
-  letter-spacing: 0.03em;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  padding: 3px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
-.banner-win {
-  background: rgba(34, 197, 94, 0.15);
+.result-pill.tone-none {
+  background: transparent;
+  color: transparent;
+  border-color: transparent;
+}
+
+.result-pill.tone-win {
+  background: rgba(34, 197, 94, 0.16);
   color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-color: rgba(34, 197, 94, 0.35);
 }
 
-.banner-neutral {
-  background: rgba(148, 163, 184, 0.1);
+.result-pill.tone-loss {
+  background: rgba(244, 63, 94, 0.14);
+  color: #fb7185;
+  border-color: rgba(244, 63, 94, 0.35);
+}
+
+.result-pill.tone-neutral {
+  background: rgba(148, 163, 184, 0.12);
   color: #94a3b8;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-color: rgba(148, 163, 184, 0.25);
 }
 </style>

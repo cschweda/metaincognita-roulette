@@ -3,27 +3,33 @@
     <span class="staked-readout">
       Staked: <span class="staked-amount">{{ formatCents(totalStaked) }}</span>
     </span>
+    <UButton
+      color="primary"
+      size="xl"
+      block
+      class="spin-btn"
+      :loading="spinning"
+      :disabled="spinning || totalStaked === 0"
+      @click="emit('spin')"
+    >
+      {{ spinning ? 'Spinning…' : 'Spin' }}
+    </UButton>
     <div class="controls-row">
       <UButton
-        color="primary"
-        size="lg"
-        :loading="spinning"
-        :disabled="spinning || totalStaked === 0"
-        @click="emit('spin')"
-      >
-        {{ spinning ? 'Spinning…' : 'Spin' }}
-      </UButton>
-      <UButton
+        class="ctl-btn"
+        color="neutral"
         variant="outline"
-        size="lg"
+        size="md"
         :disabled="spinning || totalStaked === 0"
         @click="emit('clear')"
       >
         Clear
       </UButton>
       <UButton
-        variant="ghost"
-        size="lg"
+        class="ctl-btn"
+        color="primary"
+        variant="soft"
+        size="md"
         :disabled="spinning || !canRepeat"
         @click="emit('repeat')"
       >
@@ -56,6 +62,8 @@ const emit = defineEmits<{
   align-items: center;
   gap: 8px;
   padding: 4px 0 8px;
+  width: 100%;
+  max-width: 340px;
 }
 
 .staked-readout {
@@ -71,9 +79,22 @@ const emit = defineEmits<{
   color: var(--gold, #d4a847);
 }
 
+.spin-btn {
+  min-height: 56px;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .controls-row {
   display: flex;
   gap: 10px;
-  align-items: center;
+  width: 100%;
+}
+
+.ctl-btn {
+  flex: 1;
+  justify-content: center;
 }
 </style>
