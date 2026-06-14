@@ -316,10 +316,15 @@ function spinTo(pocket: Pocket): Promise<void> {
         const ke = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2
         r = R_TRACK + (R_REST - R_TRACK) * ke
         lift = -9 * Math.sin(Math.min(1, k) * Math.PI)
-        // Diamond rattle — radius wobble only (stays one ball)
+        // Diamond rattle — radius wobble plus a small vertical hop, so the ball
+        // visibly clatters as it bumps over each deflector (a touch more obvious).
         for (const da of diamonds) {
           const dd = Math.abs(Math.atan2(Math.sin(ballAngle - da), Math.cos(ballAngle - da)))
-          if (dd < 0.13 && k < 0.85) r += 3.2 * Math.sin(t * 55)
+          if (dd < 0.15 && k < 0.88) {
+            const clatter = Math.sin(t * 55)
+            r += 4.6 * clatter
+            lift += 4 * Math.abs(clatter)
+          }
         }
       }
 

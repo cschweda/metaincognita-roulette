@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The **Spin button** is now high-contrast casino gold instead of pink.
 - Enlarged the **Staked** total and the ready-to-spin pulse for at-a-glance visibility.
+- The ball clatters more visibly over the wheel deflectors as it settles.
 
 ## [0.1.0] — 2026-06-14
 
