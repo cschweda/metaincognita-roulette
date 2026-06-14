@@ -55,7 +55,8 @@ export const useRouletteStore = defineStore('roulette', {
   }),
   getters: {
     preset: s => rouletteConfig.presets.find(p => p.id === s.presetId) ?? rouletteConfig.presets[0]!,
-    totalStakedCents: s => s.bets.reduce((acc, b) => acc + b.stakeCents, 0)
+    totalStakedCents: s => s.bets.reduce((acc, b) => acc + b.stakeCents, 0),
+    rules: (s): import('../engine/bets').Rules => ({ variant: s.variant, evenMoney: s.evenMoney })
   },
   actions: {
     initializeGame(args: InitArgs, seed?: number) {

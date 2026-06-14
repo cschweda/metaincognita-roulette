@@ -55,6 +55,7 @@
           </template>
         </div>
         <StatsPanel />
+        <EvAdvisor />
       </div>
 
       <!-- Right: the betting layout -->
@@ -102,6 +103,7 @@ import ChipTray from '~/components/wheel/ChipTray.vue'
 import BetControls from '~/components/wheel/BetControls.vue'
 import StatsPanel from '~/components/wheel/StatsPanel.vue'
 import BankrollStack from '~/components/wheel/BankrollStack.vue'
+import EvAdvisor from '~/components/wheel/EvAdvisor.vue'
 
 const store = useRouletteStore()
 const { dragging: dragActive, chipCents: dragChipCents, x: dragX, y: dragY, start: dragStart } = useChipDrag((descriptor, cents) => {
