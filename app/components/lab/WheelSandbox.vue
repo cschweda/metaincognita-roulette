@@ -160,7 +160,7 @@
             stroke-dasharray="4 3"
           />
         </svg>
-        <p class="text-[10px] text-neutral-500 mt-1">
+        <p class="text-[10px] text-neutral-400 mt-1">
           Dashed line = expected count ({{ expectedCount.toFixed(0) }} per pocket). Bars colored by pocket color.
         </p>
       </div>
@@ -197,12 +197,12 @@
       <!-- House edge -->
       <div class="rounded bg-neutral-800/60 px-3 py-2.5 flex flex-wrap items-baseline gap-x-4 gap-y-1 font-mono">
         <span>
-          <span class="text-[10px] uppercase tracking-widest text-neutral-500 mr-1.5">Measured house edge</span>
+          <span class="text-[10px] uppercase tracking-widest text-neutral-400 mr-1.5">Measured house edge</span>
           <span
             class="font-semibold text-rose-300"
           >{{ formatPercent(result.edge) }}</span>
         </span>
-        <span class="text-xs text-neutral-500">
+        <span class="text-xs text-neutral-400">
           theoretical:
           {{ variant === 'single' ? '2.70%' : '5.26%' }}
           ({{ variant === 'single' ? 'single-zero' : 'double-zero' }})
@@ -223,7 +223,7 @@
     <!-- Empty state -->
     <div
       v-else
-      class="rounded bg-neutral-800/20 px-4 py-4 text-center text-xs text-neutral-500"
+      class="rounded bg-neutral-800/20 px-4 py-4 text-center text-xs text-neutral-400"
     >
       Set the bias slider and hit <strong class="text-neutral-400">Run simulation</strong> to see the distribution.
     </div>

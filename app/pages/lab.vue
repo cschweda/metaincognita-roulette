@@ -22,6 +22,8 @@ import { useRouletteStore } from '~/stores/roulette'
 
 const store = useRouletteStore()
 onMounted(() => {
-  if (store.phase === 'setup' && !store.loadFromLocalStorage()) navigateTo('/')
+  // The Lab is a tool — usable without an active session. Load one if it exists
+  // (so the hardcore stats reflect your game), but don't force a redirect.
+  if (store.phase === 'setup') store.loadFromLocalStorage()
 })
 </script>

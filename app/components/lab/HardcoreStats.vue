@@ -45,7 +45,7 @@
     <div class="rounded bg-neutral-800/40 px-3 py-2.5 space-y-1.5">
       <div class="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-sm">
         <span>
-          <span class="text-[10px] uppercase tracking-widest text-neutral-500 mr-1.5">measurement</span>
+          <span class="text-[10px] uppercase tracking-widest text-neutral-400 mr-1.5">measurement</span>
           <span
             class="font-semibold"
             :class="realizedEdgeFraction >= 0 ? 'text-rose-300' : 'text-emerald-300'"
@@ -56,7 +56,7 @@
           >(player ahead)</span>
         </span>
         <span>
-          <span class="text-[10px] uppercase tracking-widest text-neutral-500 mr-1.5">model</span>
+          <span class="text-[10px] uppercase tracking-widest text-neutral-400 mr-1.5">model</span>
           <span class="font-semibold text-neutral-300">{{ formatPercent(store.preset.edgePct / 100) }}</span>
         </span>
       </div>
@@ -68,7 +68,7 @@
       </p>
       <p
         v-else
-        class="text-[11px] text-neutral-500"
+        class="text-[11px] text-neutral-400"
       >
         No spins yet — make some bets to see your realized edge.
       </p>
@@ -82,7 +82,7 @@
         </dt>
         <dd
           class="text-base"
-          :class="biggestWin !== null ? 'text-emerald-400' : 'text-neutral-500'"
+          :class="biggestWin !== null ? 'text-emerald-400' : 'text-neutral-400'"
         >
           {{ biggestWin !== null ? formatSignedCents(biggestWin) : '—' }}
         </dd>
@@ -93,7 +93,7 @@
         </dt>
         <dd
           class="text-base"
-          :class="worstLoss !== null ? 'text-rose-400' : 'text-neutral-500'"
+          :class="worstLoss !== null ? 'text-rose-400' : 'text-neutral-400'"
         >
           {{ worstLoss !== null ? formatSignedCents(worstLoss) : '—' }}
         </dd>
@@ -107,13 +107,13 @@
       </h3>
       <div
         v-if="topPockets.length === 0"
-        class="text-[11px] text-neutral-500"
+        class="text-[11px] text-neutral-400"
       >
         No spin history yet.
       </div>
       <div
         v-else-if="store.spinHistory.length < 10"
-        class="text-[11px] text-neutral-500 mb-2"
+        class="text-[11px] text-neutral-400 mb-2"
       >
         Only {{ store.spinHistory.length }} spin{{ store.spinHistory.length === 1 ? '' : 's' }} — counts are too small to be meaningful.
       </div>
