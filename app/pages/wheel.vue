@@ -82,6 +82,7 @@
       <div class="flex flex-col sm:flex-row gap-3 w-full max-w-5xl mx-auto">
         <StatsPanel class="flex-1 min-w-0" />
         <EvAdvisor class="flex-1 min-w-0" />
+        <ResultBreakdown class="flex-1 min-w-0" />
       </div>
     </div>
     <div
@@ -106,6 +107,7 @@ import RouletteMat from '~/components/wheel/RouletteMat.vue'
 import ChipTray from '~/components/wheel/ChipTray.vue'
 import BetControls from '~/components/wheel/BetControls.vue'
 import StatsPanel from '~/components/wheel/StatsPanel.vue'
+import ResultBreakdown from '~/components/wheel/ResultBreakdown.vue'
 import BankrollStack from '~/components/wheel/BankrollStack.vue'
 import EvAdvisor from '~/components/wheel/EvAdvisor.vue'
 

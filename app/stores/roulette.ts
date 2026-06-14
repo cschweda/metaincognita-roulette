@@ -56,6 +56,7 @@ export const useRouletteStore = defineStore('roulette', {
     flash: null as { id: number, text: string, tone: FlashTone } | null,
     game: null as RouletteGame | null,
     revealPocket: null as Pocket | null,
+    lastRoundResult: null as RoundResult | null,
     wheelCondition: {} as WheelCondition
   }),
   getters: {
@@ -164,6 +165,7 @@ export const useRouletteStore = defineStore('roulette', {
       this.sessionLog.push({ pocket: result.pocket, stakeCents: result.totalStakeCents, returnCents: result.totalReturnCents, netCents: result.netCents, bankrollCents: this.bankrollCents })
       this.sessionLog = this.sessionLog.slice(-500)
       this.revealPocket = result.pocket
+      this.lastRoundResult = result
       this.lastRoundBets = this.bets
       this.bets = []
       this.phase = 'resolved'
@@ -177,6 +179,7 @@ export const useRouletteStore = defineStore('roulette', {
       }
       if (this.phase !== 'betting') return false
       if (stakeCents <= 0 || stakeCents > this.bankrollCents) return false
+      this.lastRoundResult = null
       const existing = this.bets.find(b => b.type === descriptor.type && sameNumbers(b.numbers, descriptor.numbers))
       if (existing) existing.stakeCents += stakeCents
       else this.bets.push({ type: descriptor.type, numbers: [...descriptor.numbers], stakeCents })
