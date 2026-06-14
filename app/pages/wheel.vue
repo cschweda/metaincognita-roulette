@@ -17,6 +17,7 @@
         >
           {{ formatCents(store.bankrollCents) }}
         </span>
+        <MiniSparkline class="hidden sm:block" />
         <span
           class="result-pill"
           :class="'tone-' + resultTone"
