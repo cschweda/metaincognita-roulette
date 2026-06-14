@@ -4,6 +4,7 @@ import { rouletteConfig } from '../../roulette.config'
 import type { Variant, Pocket } from '../engine/wheel'
 import type { BetType, EvenMoneyRule, Bet } from '../engine/bets'
 import { RouletteGame, type RoundResult } from '../engine/round'
+import type { WheelCondition } from '../engine/physics'
 import {
   SESSION_VERSION, serializeSession, parseSession,
   type RouletteSession, type SpinRecord, type SessionStats
@@ -48,7 +49,8 @@ export const useRouletteStore = defineStore('roulette', {
     lastRoundBets: [] as Bet[],
     storageWarning: false,
     game: null as RouletteGame | null,
-    revealPocket: null as Pocket | null
+    revealPocket: null as Pocket | null,
+    wheelCondition: {} as WheelCondition
   }),
   getters: {
     preset: s => rouletteConfig.presets.find(p => p.id === s.presetId) ?? rouletteConfig.presets[0]!,
@@ -67,7 +69,8 @@ export const useRouletteStore = defineStore('roulette', {
       this.spinHistory = []
       this.sessionStats = { spins: 0, wageredCents: 0, netCents: 0 }
       this.bankrollHistory = [args.bankrollCents]
-      this.game = markRaw(new RouletteGame({ variant: preset.variant, evenMoney: preset.evenMoney }, seed ?? cryptoSeed()))
+      this.wheelCondition = {}
+      this.game = markRaw(new RouletteGame({ variant: preset.variant, evenMoney: preset.evenMoney }, seed ?? cryptoSeed(), {}))
       this.revealPocket = null
       this.phase = 'betting'
       this.saveToLocalStorage()
@@ -84,7 +87,8 @@ export const useRouletteStore = defineStore('roulette', {
         bets: this.bets,
         spinHistory: this.spinHistory,
         sessionStats: this.sessionStats,
-        bankrollHistory: this.bankrollHistory
+        bankrollHistory: this.bankrollHistory,
+        wheelCondition: this.wheelCondition
       }
     },
     saveToLocalStorage() {
@@ -115,9 +119,17 @@ export const useRouletteStore = defineStore('roulette', {
       this.spinHistory = session.spinHistory
       this.sessionStats = session.sessionStats
       this.bankrollHistory = session.bankrollHistory
-      this.game = markRaw(new RouletteGame({ variant: this.variant, evenMoney: this.evenMoney }, cryptoSeed()))
+      this.wheelCondition = session.wheelCondition
+      this.game = markRaw(new RouletteGame({ variant: this.variant, evenMoney: this.evenMoney }, cryptoSeed(), session.wheelCondition))
       this.phase = 'betting'
       return true
+    },
+    setWheelCondition(cond: WheelCondition) {
+      this.wheelCondition = cond
+      if (this.game) {
+        this.game = markRaw(new RouletteGame({ variant: this.variant, evenMoney: this.evenMoney }, cryptoSeed(), cond))
+      }
+      this.saveToLocalStorage()
     },
     clearSession() {
       if (typeof localStorage !== 'undefined') localStorage.removeItem(rouletteConfig.storage.sessionKey)

@@ -1,5 +1,6 @@
 import type { Variant, Pocket } from '../engine/wheel'
 import type { EvenMoneyRule, Bet } from '../engine/bets'
+import type { WheelCondition } from '../engine/physics'
 
 export const SESSION_VERSION = 1 as const
 
@@ -18,6 +19,7 @@ export interface RouletteSession {
   spinHistory: SpinRecord[]
   sessionStats: SessionStats
   bankrollHistory: number[]
+  wheelCondition: WheelCondition
 }
 
 export function serializeSession(s: RouletteSession): string {
@@ -43,5 +45,6 @@ export function parseSession(raw: string): RouletteSession | null {
   if (typeof d.sessionStats !== 'object' || d.sessionStats === null) return null
   const session = data as RouletteSession
   if (!Array.isArray(session.bankrollHistory)) session.bankrollHistory = []
+  if (typeof session.wheelCondition !== 'object' || session.wheelCondition === null) session.wheelCondition = {}
   return session
 }

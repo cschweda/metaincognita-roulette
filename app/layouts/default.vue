@@ -5,7 +5,7 @@ const store = useRouletteStore()
 
 const isSetup = computed(() => route.path === '/')
 const isWheel = computed(() => route.path === '/wheel')
-const isSubPage = computed(() => route.path === '/history' || route.path === '/analysis' || route.path === '/learn')
+const isSubPage = computed(() => route.path === '/history' || route.path === '/analysis' || route.path === '/learn' || route.path === '/lab')
 
 // Back button logic
 const showLeaveConfirm = ref(false)
@@ -115,6 +115,19 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
             class="w-3.5 h-3.5"
           />
           <span>Learn</span>
+        </button>
+        <button
+          class="flex items-center gap-1.5 text-xs transition-colors"
+          :class="route.path === '/lab'
+            ? 'text-amber-400'
+            : 'text-neutral-400 hover:text-neutral-200'"
+          @click="navigateTo('/lab')"
+        >
+          <UIcon
+            name="i-lucide-flask-conical"
+            class="w-3.5 h-3.5"
+          />
+          <span>Lab</span>
         </button>
       </div>
       <div class="flex items-center gap-2">
