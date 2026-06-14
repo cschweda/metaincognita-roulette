@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The ball clatters more visibly over the wheel deflectors as it settles.
 - Moved the visual chip stack ("Your stack") beside the Spin button.
 
+### Fixed
+
+- Accessibility: dropped a redundant `aria-label` on the Download CSV buttons (WCAG 2.5.3 label-in-name). The whole app is now **axe-clean (axe-core) and Lighthouse a11y 100** on every route.
+
 ## [0.1.0] — 2026-06-14
 
 The first fully playable release: a verified roulette engine wrapped in the
