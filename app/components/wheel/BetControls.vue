@@ -13,6 +13,11 @@
       @click="emit('spin')"
     >
       {{ spinning ? 'Spinning…' : 'Spin' }}
+      <span
+        v-if="!spinning && totalStaked > 0"
+        class="spin-ready-dot"
+        aria-hidden="true"
+      />
     </UButton>
     <div class="controls-row">
       <UButton
@@ -80,11 +85,44 @@ const emit = defineEmits<{
 }
 
 .spin-btn {
+  position: relative;
   min-height: 56px;
   font-size: 18px !important;
   font-weight: 800 !important;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.spin-ready-dot {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  animation: spin-ready 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes spin-ready {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(0.85);
+  }
+
+  50% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin-ready-dot {
+    animation: none;
+    opacity: 0.7;
+  }
 }
 
 .controls-row {
