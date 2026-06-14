@@ -41,5 +41,5 @@ export const rouletteConfig = {
   /** Chip denominations offered in the tray (cents). */
   chips: [100, 500, 2_500, 10_000, 50_000],
   timings: { spinMs: 8800, settleRevealMs: 600 },
-  defaultPresetId: 'european'
+  defaultPresetId: 'american'
 } as const
