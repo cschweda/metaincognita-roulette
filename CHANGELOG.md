@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Playwright E2E for the money path + GitHub Actions CI.
+- **Markers on the bankroll sparkline** at each spin, so you can see where the session turned up or down.
+- **Confirmation toasts for every player action** — placing a bet, clearing, repeating, buying in, and toggling spin speed.
 - A **Drills practice page** (`/drills`) — quiz-style payout and house-edge drills that reuse the engine to build bet literacy. Each question is generated deterministically from a seed (so it's reproducible and testable) and teaches the *why*: every bet on a wheel shares the same edge, single-zero beats double-zero, and Surrender softens the green pockets. Tracks streak and correct / total for the session.
 - A **Realistic / Quick spin-speed toggle** in the play-screen header — persisted to localStorage so the preference survives page reloads. Realistic keeps the approved ~10 s feel; Quick settles in ~3.8 s.
 - A **"Last spin" breakdown card** in the play-screen dashboard — a per-bet, won/lost summary (each bet's label, net, and the winning pocket) so it's obvious *why* you won or lost.
@@ -26,10 +28,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enlarged the **Staked** total and the ready-to-spin pulse for at-a-glance visibility.
 - The ball clatters more visibly over the wheel deflectors as it settles.
 - Moved the visual chip stack ("Your stack") beside the Spin button.
+- The recent-results scoreboard is labeled **"Previous spins"** and no longer repeats the current number (shown big above).
 
 ### Fixed
 
 - Accessibility: dropped a redundant `aria-label` on the Download CSV buttons (WCAG 2.5.3 label-in-name). The whole app is now **axe-clean (axe-core) and Lighthouse a11y 100** on every route.
+- Toasts now update in place when several fire in quick succession (a stale `<Transition>` element could leave the previous message stuck on screen).
 
 ## [0.1.0] — 2026-06-14
 

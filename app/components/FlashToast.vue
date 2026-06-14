@@ -2,7 +2,6 @@
   <Transition name="flash">
     <div
       v-if="store.flash"
-      :key="store.flash.id"
       class="flash-toast"
       :class="'flash-' + store.flash.tone"
       role="status"

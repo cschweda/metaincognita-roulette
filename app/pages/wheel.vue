@@ -31,7 +31,7 @@
           class="speed-toggle shrink-0"
           :aria-label="`Spin speed: ${store.spinSpeed === 'quick' ? 'Quick' : 'Realistic'} — click to switch`"
           :title="`Spin speed: ${store.spinSpeed === 'quick' ? 'Quick' : 'Realistic'} — click to switch`"
-          @click="store.setSpinSpeed(store.spinSpeed === 'quick' ? 'realistic' : 'quick')"
+          @click="onToggleSpeed"
         >
           <UIcon
             name="i-lucide-timer"
@@ -101,7 +101,7 @@
               :total-staked="store.totalStakedCents"
               :can-repeat="store.lastRoundBets.length > 0"
               @spin="spin"
-              @clear="store.clearBets"
+              @clear="onClear"
               @repeat="onRepeat"
             />
             <div class="flex flex-col items-center gap-1">
@@ -175,6 +175,7 @@ import { useFitScale } from '~/composables/useFitScale'
 import { formatCents, formatSignedCents } from '~/utils/format'
 import { downloadText } from '~/utils/download'
 import { sessionToCsv } from '~/utils/sessionCsv'
+import { betLabel } from '~/utils/betLabel'
 import type { Pocket } from '~/engine/wheel'
 import type { BetType } from '~/engine/bets'
 import RouletteWheel from '~/components/wheel/RouletteWheel.vue'
@@ -190,7 +191,9 @@ import EvAdvisor from '~/components/wheel/EvAdvisor.vue'
 const store = useRouletteStore()
 const { dragging: dragActive, chipCents: dragChipCents, x: dragX, y: dragY, start: dragStart } = useChipDrag((descriptor, cents) => {
   lastNet.value = null
-  store.placeBet(descriptor, cents)
+  if (store.placeBet(descriptor, cents)) {
+    store.showFlash('Placed ' + formatCents(cents) + ' on ' + betLabel({ type: descriptor.type, numbers: descriptor.numbers, stakeCents: cents }), 'info')
+  }
 })
 const wheelRef = ref<{ spinTo: (p: Pocket) => Promise<void> } | null>(null)
 const reducedMotion = ref(false)
@@ -234,6 +237,7 @@ const showBroke = ref(false)
 function onBuyMoreChips() {
   store.rebuy(startingCents.value)
   showBroke.value = false
+  store.showFlash('Bought in for ' + formatCents(startingCents.value), 'info')
 }
 function onNewSession() {
   store.clearSession()
@@ -268,12 +272,30 @@ function onPlace(descriptor: { type: BetType, numbers: Pocket[] }) {
     return
   }
   lastNet.value = null
-  store.placeBet(descriptor, store.selectedChipCents)
+  if (store.placeBet(descriptor, store.selectedChipCents)) {
+    store.showFlash('Placed ' + formatCents(store.selectedChipCents) + ' on ' + betLabel({ type: descriptor.type, numbers: descriptor.numbers, stakeCents: store.selectedChipCents }), 'info')
+  }
 }
 
 function onRepeat() {
-  if (store.repeatLastBet()) lastNet.value = null
-  else store.showFlash('Not enough in your bankroll to repeat that bet.')
+  if (store.repeatLastBet()) {
+    lastNet.value = null
+    store.showFlash('Repeated your last bet', 'info')
+  } else {
+    store.showFlash('Not enough in your bankroll to repeat that bet.')
+  }
+}
+
+function onClear() {
+  if (store.totalStakedCents === 0) return
+  store.clearBets()
+  store.showFlash('Bets cleared', 'info')
+}
+
+function onToggleSpeed() {
+  const next = store.spinSpeed === 'quick' ? 'realistic' : 'quick'
+  store.setSpinSpeed(next)
+  store.showFlash(next === 'quick' ? 'Quick spin' : 'Realistic spin', 'info')
 }
 
 async function spin() {
