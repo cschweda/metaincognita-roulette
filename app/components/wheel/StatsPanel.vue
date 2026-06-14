@@ -56,6 +56,16 @@
         stroke-linejoin="round"
         stroke-linecap="round"
       />
+      <circle
+        v-for="(d, i) in spark.dots"
+        :key="i"
+        :cx="d.x"
+        :cy="d.y"
+        r="2"
+        :fill="up ? '#34d399' : '#fb7185'"
+        stroke="#0c0c0c"
+        stroke-width="0.6"
+      />
     </svg>
     <div
       v-else
@@ -91,11 +101,11 @@ const spark = computed(() => {
   const min = Math.min(...v)
   const max = Math.max(...v)
   const range = max - min || 1
-  const pts = v.map((y, i) => {
-    const x = (i / (v.length - 1)) * W
-    const yy = H - ((y - min) / range) * (H - 4) - 2
-    return `${x.toFixed(1)},${yy.toFixed(1)}`
-  })
-  return { line: pts.join(' '), area: `0,${H} ${pts.join(' ')} ${W},${H}` }
+  const dots = v.map((y, i) => ({
+    x: +((i / (v.length - 1)) * W).toFixed(1),
+    y: +(H - ((y - min) / range) * (H - 4) - 2).toFixed(1)
+  }))
+  const pts = dots.map(d => `${d.x},${d.y}`)
+  return { line: pts.join(' '), area: `0,${H} ${pts.join(' ')} ${W},${H}`, dots }
 })
 </script>
