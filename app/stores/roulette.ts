@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { markRaw } from 'vue'
 import { rouletteConfig } from '../../roulette.config'
 import type { Variant, Pocket } from '../engine/wheel'
-import type { EvenMoneyRule, Bet } from '../engine/bets'
+import type { BetType, EvenMoneyRule, Bet } from '../engine/bets'
 import { RouletteGame, type RoundResult } from '../engine/round'
 import {
   SESSION_VERSION, serializeSession, parseSession,
@@ -10,6 +10,13 @@ import {
 } from './sessionState'
 
 export type Phase = 'setup' | 'betting' | 'spinning' | 'resolved'
+
+function sameNumbers(a: Pocket[], b: Pocket[]): boolean {
+  if (a.length !== b.length) return false
+  const sa = [...a].map(String).sort()
+  const sb = [...b].map(String).sort()
+  return sa.every((v, i) => v === sb[i])
+}
 
 function cryptoSeed(): number {
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
@@ -37,12 +44,14 @@ export const useRouletteStore = defineStore('roulette', {
     bets: [] as Bet[],
     spinHistory: [] as SpinRecord[],
     sessionStats: { spins: 0, wageredCents: 0, netCents: 0 } as SessionStats,
+    lastRoundBets: [] as Bet[],
     storageWarning: false,
     game: null as RouletteGame | null,
     revealPocket: null as Pocket | null
   }),
   getters: {
-    preset: s => rouletteConfig.presets.find(p => p.id === s.presetId) ?? rouletteConfig.presets[0]!
+    preset: s => rouletteConfig.presets.find(p => p.id === s.presetId) ?? rouletteConfig.presets[0]!,
+    totalStakedCents: s => s.bets.reduce((acc, b) => acc + b.stakeCents, 0)
   },
   actions: {
     initializeGame(args: InitArgs, seed?: number) {
@@ -117,15 +126,46 @@ export const useRouletteStore = defineStore('roulette', {
       return this.game.playRound(this.bets)
     },
     commitSpin(result: RoundResult) {
-      this.bankrollCents += result.netCents
+      this.bankrollCents += result.totalReturnCents
       this.spinHistory.unshift({ pocket: result.pocket, netCents: result.netCents })
       this.spinHistory = this.spinHistory.slice(0, 50)
       this.sessionStats.spins += 1
       this.sessionStats.wageredCents += result.totalStakeCents
       this.sessionStats.netCents += result.netCents
       this.revealPocket = result.pocket
+      this.lastRoundBets = this.bets
+      this.bets = []
       this.phase = 'resolved'
       this.saveToLocalStorage()
+    },
+    placeBet(descriptor: { type: BetType, numbers: Pocket[] }, stakeCents: number): boolean {
+      if (this.phase === 'resolved') {
+        this.bets = []
+        this.phase = 'betting'
+      }
+      if (this.phase !== 'betting') return false
+      if (stakeCents <= 0 || stakeCents > this.bankrollCents) return false
+      const existing = this.bets.find(b => b.type === descriptor.type && sameNumbers(b.numbers, descriptor.numbers))
+      if (existing) existing.stakeCents += stakeCents
+      else this.bets.push({ type: descriptor.type, numbers: [...descriptor.numbers], stakeCents })
+      this.bankrollCents -= stakeCents
+      this.saveToLocalStorage()
+      return true
+    },
+    clearBets() {
+      for (const b of this.bets) this.bankrollCents += b.stakeCents
+      this.bets = []
+      this.saveToLocalStorage()
+    },
+    repeatLastBet(): boolean {
+      if (this.lastRoundBets.length === 0) return false
+      const total = this.lastRoundBets.reduce((acc, b) => acc + b.stakeCents, 0)
+      if (total > this.bankrollCents) return false
+      for (const b of this.lastRoundBets) this.placeBet({ type: b.type, numbers: b.numbers }, b.stakeCents)
+      return true
+    },
+    setSelectedChip(cents: number) {
+      this.selectedChipCents = cents
     },
     readyForNextSpin() {
       this.phase = 'betting'
