@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { betLabel } from '../../app/utils/betLabel'
+import { betLabel, betMeaning } from '../../app/utils/betLabel'
 import type { Bet, BetType } from '../../app/engine/bets'
 import type { Pocket } from '../../app/engine/wheel'
 
@@ -24,5 +24,21 @@ describe('betLabel', () => {
     expect(betLabel(b('dozen', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]))).toBe('1st 12')
     expect(betLabel(b('dozen', [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]))).toBe('2nd 12')
     expect(betLabel(b('column', [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36]))).toBe('Column 3')
+  })
+})
+
+describe('betMeaning', () => {
+  it('explains an even-money bet on a double-zero wheel', () => {
+    expect(betMeaning(b('black'), 'double')).toBe('Black — pays 1:1, wins $1 if it hits (18 of 38)')
+  })
+
+  it('explains a straight-up bet with its winnings on a double-zero wheel', () => {
+    // $1 stake × 35 payout = $35 winnings; one pocket of 38.
+    expect(betMeaning({ type: 'straight', numbers: [7], stakeCents: 500 }, 'double'))
+      .toBe('Straight 7 — pays 35:1, wins $175 if it hits (1 of 38)')
+  })
+
+  it('uses the single-zero pocket count when the wheel is single', () => {
+    expect(betMeaning(b('red'), 'single')).toBe('Red — pays 1:1, wins $1 if it hits (18 of 37)')
   })
 })

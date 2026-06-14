@@ -1,4 +1,6 @@
-import type { Bet } from '~/engine/bets'
+import { PAYOUTS, coverage, type Bet } from '../engine/bets'
+import { pocketCount, type Variant } from '../engine/wheel'
+import { formatCents } from './format'
 
 /** A short, human-readable name for a bet, e.g. "Red", "Straight 7", "Corner 7–11", "1st 12". */
 export function betLabel(bet: Bet): string {
@@ -20,4 +22,17 @@ export function betLabel(bet: Bet): string {
     case 'column': return n[0] === 1 ? 'Column 1' : n[0] === 2 ? 'Column 2' : 'Column 3'
     default: return bet.type
   }
+}
+
+/**
+ * A beginner-friendly, plain-language explanation of a bet, e.g.
+ * "Black — pays 1:1, wins $5 if it hits (18 of 38)" or
+ * "Straight 7 — pays 35:1, wins $175 if it hits (1 of 38)".
+ */
+export function betMeaning(bet: Bet, variant: Variant): string {
+  const payout = PAYOUTS[bet.type]
+  const wins = formatCents(bet.stakeCents * payout)
+  const hits = coverage(bet).size
+  const total = pocketCount(variant)
+  return `${betLabel(bet)} — pays ${payout}:1, wins ${wins} if it hits (${hits} of ${total})`
 }

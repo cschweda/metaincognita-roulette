@@ -10,15 +10,22 @@
     <div class="text-[11px] text-neutral-400 mb-1.5">
       House edge: <span class="font-mono text-neutral-300">{{ store.preset.edgePct.toFixed(2) }}%</span>
     </div>
-    <div
-      v-if="store.bets.length > 0"
-      class="text-[12px] text-neutral-300 leading-snug"
-    >
-      On this <span class="font-mono">{{ formatCents(totalStakeCents) }}</span> you're staking,
-      the house expects to keep
-      <span class="font-mono text-rose-400 font-semibold">{{ formatCents(Math.round(-evCents)) }}</span>
-      <span class="text-neutral-400">({{ lossPct }}%)</span>.
-    </div>
+    <template v-if="store.bets.length > 0">
+      <ul class="text-[12px] text-neutral-300 leading-snug mb-1.5 max-h-[88px] overflow-y-auto space-y-0.5">
+        <li
+          v-for="(bet, i) in store.bets"
+          :key="`${bet.type}-${bet.numbers.join('_')}-${i}`"
+        >
+          {{ betMeaning(bet, store.variant) }}
+        </li>
+      </ul>
+      <div class="text-[12px] text-neutral-300 leading-snug">
+        On this <span class="font-mono">{{ formatCents(totalStakeCents) }}</span> you're staking,
+        the house expects to keep
+        <span class="font-mono text-rose-400 font-semibold">{{ formatCents(Math.round(-evCents)) }}</span>
+        <span class="text-neutral-400">({{ lossPct }}%)</span>.
+      </div>
+    </template>
     <div
       v-else
       class="text-[12px] text-neutral-400"
@@ -33,6 +40,7 @@ import { computed } from 'vue'
 import { useRouletteStore } from '~/stores/roulette'
 import { combinedEvCents } from '~/engine/ev'
 import { formatCents } from '~/utils/format'
+import { betMeaning } from '~/utils/betLabel'
 
 const store = useRouletteStore()
 
