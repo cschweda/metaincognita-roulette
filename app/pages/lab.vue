@@ -16,7 +16,6 @@
           variant="soft"
           icon="i-lucide-download"
           :disabled="store.sessionLog.length === 0"
-          aria-label="Download session as CSV"
           @click="handleDownload"
         >
           Download CSV
