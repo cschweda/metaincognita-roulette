@@ -42,16 +42,10 @@
             :reduced-motion="reducedMotion"
             :size="380"
           />
-          <div class="flex items-center justify-center gap-5">
-            <BankrollStack
-              :bankroll-cents="store.bankrollCents"
-              :starting-cents="startingCents"
-            />
-            <ResultBadge
-              :latest="store.revealPocket"
-              :history="historyPockets"
-            />
-          </div>
+          <ResultBadge
+            :latest="store.revealPocket"
+            :history="historyPockets"
+          />
         </div>
 
         <!-- Right: the betting layout -->
@@ -61,12 +55,21 @@
             :bets="store.bets"
             @place="onPlace"
           />
-          <ChipTray
-            :selected="store.selectedChipCents"
-            :max-cents="store.bankrollCents"
-            @select="store.setSelectedChip"
-            @dragstart="(p) => dragStart(p.cents, p.ev)"
-          />
+          <div class="flex items-center justify-center gap-5">
+            <ChipTray
+              :selected="store.selectedChipCents"
+              :max-cents="store.bankrollCents"
+              @select="store.setSelectedChip"
+              @dragstart="(p) => dragStart(p.cents, p.ev)"
+            />
+            <div class="flex flex-col items-center gap-1">
+              <span class="text-[10px] uppercase tracking-wide text-neutral-400">Your stack</span>
+              <BankrollStack
+                :bankroll-cents="store.bankrollCents"
+                :starting-cents="startingCents"
+              />
+            </div>
+          </div>
           <BetControls
             :spinning="store.phase === 'spinning'"
             :total-staked="store.totalStakedCents"
