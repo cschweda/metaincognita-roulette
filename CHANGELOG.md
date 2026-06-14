@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A **"Last spin" breakdown card** in the play-screen dashboard — a per-bet, won/lost summary (each bet's label, net, and the winning pocket) so it's obvious *why* you won or lost.
 - A subtle **"ready to spin" pulse** on the Spin button when a bet is placed and a spin is possible (absolutely positioned — no button or layout shift).
 
+### Changed
+
+- The **Spin button** is now high-contrast casino gold instead of pink.
+
 ## [0.1.0] — 2026-06-14
 
 The first fully playable release: a verified roulette engine wrapped in the

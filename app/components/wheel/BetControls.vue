@@ -91,6 +91,14 @@ const emit = defineEmits<{
   font-weight: 800 !important;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  background: linear-gradient(180deg, #ecc85f 0%, #c99a2e 100%) !important;
+  color: #2a1d05 !important;
+  border: 1px solid rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 2px 10px rgba(201, 154, 46, 0.35) !important;
+}
+
+.spin-btn:hover {
+  background: linear-gradient(180deg, #f2d472 0%, #d6a634 100%) !important;
 }
 
 .spin-ready-dot {
@@ -101,7 +109,7 @@ const emit = defineEmits<{
   height: 8px;
   margin-top: -4px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(42, 29, 5, 0.85);
   animation: spin-ready 1.8s ease-in-out infinite;
   pointer-events: none;
 }
