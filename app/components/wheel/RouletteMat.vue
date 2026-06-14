@@ -7,7 +7,7 @@
         <button
           type="button"
           class="cell cell-green"
-          :class="{ 'cell-single-zero': variant === 'single', 'covered': isCovered(0) }"
+          :class="{ 'cell-single-zero': variant === 'single', 'covered': isCovered(0), 'preview': isPreview(0) }"
           data-zone="straight:0"
           aria-label="Straight up 0"
           @click="place('straight', [0])"
@@ -22,7 +22,7 @@
           v-if="variant === 'double'"
           type="button"
           class="cell cell-green cell-double-zero"
-          :class="{ covered: isCovered('00') }"
+          :class="{ covered: isCovered('00'), preview: isPreview('00') }"
           data-zone="straight:00"
           aria-label="Straight up 00"
           @click="place('straight', ['00'])"
@@ -47,7 +47,7 @@
             :key="row"
             type="button"
             class="cell"
-            :class="[numClass(col * 3 - (3 - row)), { covered: isCovered(col * 3 - (3 - row)) }]"
+            :class="[numClass(col * 3 - (3 - row)), { covered: isCovered(col * 3 - (3 - row)), preview: isPreview(col * 3 - (3 - row)) }]"
             :data-zone="`straight:${col * 3 - (3 - row)}`"
             :aria-label="`Straight up ${col * 3 - (3 - row)}`"
             @click="place('straight', [col * 3 - (3 - row)])"
@@ -59,6 +59,35 @@
             >
               {{ formatCents(stakeOn('straight', [col * 3 - (3 - row)])) }}
             </span>
+          </button>
+        </div>
+
+        <!-- Inside-combination bet hotspots overlay (on the gap lines between cells).
+             The layer is pointer-events:none; only the buttons capture clicks/drops,
+             so the straight-up cells underneath stay clickable at their centres. -->
+        <div class="line-overlay">
+          <button
+            v-for="(hs, i) in hotspots"
+            :key="`${hs.type}-${hs.numbers.join('_')}-${i}`"
+            type="button"
+            class="line-hotspot"
+            :class="`line-${hs.type}`"
+            :style="{
+              left: (hs.cx - hs.w / 2) + 'px',
+              top: (hs.cy - hs.h / 2) + 'px',
+              width: hs.w + 'px',
+              height: hs.h + 'px'
+            }"
+            :data-zone="`${hs.type}:${hs.numbers.join(',')}`"
+            :aria-label="hotspotLabel(hs)"
+            @click="place(hs.type, hs.numbers)"
+            @mouseenter="previewOn(hs)"
+            @mouseleave="previewOff"
+          >
+            <span
+              v-if="stakeOn(hs.type, hs.numbers) > 0"
+              class="line-chip"
+            >{{ formatCents(stakeOn(hs.type, hs.numbers)) }}</span>
           </button>
         </div>
       </div>
@@ -247,10 +276,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { colorOf, type Pocket } from '~/engine/wheel'
 import { COLUMNS, DOZENS, coverage, type BetType } from '~/engine/bets'
 import { formatCents } from '~/utils/format'
+import { betLabel } from '~/utils/betLabel'
+import { lineBetHotspots, type Hotspot } from '~/utils/matLineBets'
 
 const props = defineProps<{
   variant: 'single' | 'double'
@@ -306,6 +337,26 @@ const coveredPockets = computed(() => {
 function isCovered(n: Pocket): boolean {
   return coveredPockets.value.has(String(n))
 }
+
+// Inside-combination bet hotspots (splits, streets, corners, six-lines, First Five)
+// that sit on the gap lines between the number cells. Pure geometry from matLineBets.
+const hotspots = computed<Hotspot[]>(() => lineBetHotspots(props.variant))
+
+function hotspotLabel(hs: Hotspot): string {
+  return betLabel({ type: hs.type, numbers: hs.numbers, stakeCents: 0 })
+}
+
+// Bonus: preview-light the cells a hotspot would cover while it's hovered.
+const hoverNumbers = ref<Set<string>>(new Set())
+function previewOn(hs: Hotspot): void {
+  hoverNumbers.value = new Set(hs.numbers.map(String))
+}
+function previewOff(): void {
+  hoverNumbers.value = new Set()
+}
+function isPreview(n: Pocket): boolean {
+  return hoverNumbers.value.has(String(n))
+}
 </script>
 
 <style scoped>
@@ -338,6 +389,57 @@ function isCovered(n: Pocket): boolean {
   display: grid;
   grid-auto-flow: column;
   gap: 3px;
+  position: relative;
+}
+
+/* Inside-combination bet hotspot overlay — sits on top of the cells, but only the
+   hotspot buttons themselves capture pointer events (the layer passes them through). */
+.line-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.line-hotspot {
+  position: absolute;
+  pointer-events: auto;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.1s, box-shadow 0.1s;
+}
+
+.line-hotspot:hover {
+  background: rgba(212, 168, 71, 0.3);
+  box-shadow: inset 0 0 0 1px var(--gold, #d4a847);
+}
+
+.line-hotspot:focus-visible {
+  outline: 2px solid var(--gold, #d4a847);
+  outline-offset: 0;
+  background: rgba(212, 168, 71, 0.2);
+}
+
+/* Chip badge for a placed inside-combination bet (mirrors .chip-badge, centred). */
+.line-chip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--gold, #d4a847);
+  color: #1a0a00;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 999px;
+  pointer-events: none;
+  line-height: 1.4;
+  white-space: nowrap;
+  z-index: 7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .num-col {
@@ -401,6 +503,12 @@ function isCovered(n: Pocket): boolean {
 /* A covered number — lit up to show it's part of a live bet */
 .cell.covered {
   box-shadow: inset 0 0 0 2px var(--gold, #d4a847), 0 0 7px rgba(212, 168, 71, 0.45);
+  z-index: 2;
+}
+
+/* Preview outline — the cells a hovered hotspot would cover (lighter than .covered). */
+.cell.preview {
+  box-shadow: inset 0 0 0 1px rgba(212, 168, 71, 0.7);
   z-index: 2;
 }
 
