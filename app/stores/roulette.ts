@@ -224,6 +224,15 @@ export const useRouletteStore = defineStore('roulette', {
     },
     dismissFlash() {
       this.flash = null
+    },
+    /** Re-buy: add chips to the bankroll. The loss still stands in the session net. */
+    rebuy(cents: number) {
+      if (cents <= 0) return
+      this.bankrollCents += cents
+      this.bankrollHistory.push(this.bankrollCents)
+      this.bankrollHistory = this.bankrollHistory.slice(-60)
+      if (this.selectedChipCents === 0) this.selectedChipCents = rouletteConfig.chips[0]!
+      this.saveToLocalStorage()
     }
   }
 })

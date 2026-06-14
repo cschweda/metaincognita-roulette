@@ -40,6 +40,15 @@ describe('you can never stake more than your bankroll', () => {
     expect(store.selectedChipCents).toBe(0)
   })
 
+  it('rebuy adds chips back and re-enables a selectable chip', () => {
+    const store = init(500, 500) // $5 bankroll, $5 chip
+    store.placeBet({ type: 'red', numbers: [] }, 500) // all-in -> $0
+    expect(store.selectedChipCents).toBe(0)
+    store.rebuy(20_000)
+    expect(store.bankrollCents).toBe(20_000)
+    expect(store.selectedChipCents).toBeGreaterThan(0)
+  })
+
   it('setSelectedChip refuses a denomination above the bankroll', () => {
     const store = init(1100, 100)
     store.setSelectedChip(50_000) // $500 > $11

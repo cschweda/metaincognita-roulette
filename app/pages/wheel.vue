@@ -95,13 +95,51 @@
     >
       {{ formatCents(dragChipCents) }}
     </div>
+
+    <UModal
+      v-model:open="showBroke"
+      title="You're out of chips"
+      :ui="{ footer: 'justify-end gap-2' }"
+    >
+      <template #body>
+        <p class="text-sm text-neutral-300">
+          Your bankroll is empty — down
+          <span class="font-mono text-rose-400">{{ formatSignedCents(store.sessionStats.netCents) }}</span>
+          over {{ store.sessionStats.spins }} spins. What would you like to do?
+        </p>
+      </template>
+      <template #footer>
+        <UButton
+          variant="ghost"
+          color="neutral"
+          @click="onSaveSession"
+        >
+          Save session
+        </UButton>
+        <UButton
+          variant="outline"
+          color="neutral"
+          @click="onNewSession"
+        >
+          New session
+        </UButton>
+        <UButton
+          color="primary"
+          @click="onBuyMoreChips"
+        >
+          Buy more chips (+{{ formatCents(startingCents) }})
+        </UButton>
+      </template>
+    </UModal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouletteStore } from '~/stores/roulette'
-import { formatCents } from '~/utils/format'
+import { formatCents, formatSignedCents } from '~/utils/format'
+import { downloadText } from '~/utils/download'
+import { sessionToCsv } from '~/utils/sessionCsv'
 import type { Pocket } from '~/engine/wheel'
 import type { BetType } from '~/engine/bets'
 import RouletteWheel from '~/components/wheel/RouletteWheel.vue'
@@ -138,6 +176,23 @@ const resultText = computed(() => {
   return 'No win'
 })
 
+const showBroke = ref(false)
+
+function onBuyMoreChips() {
+  store.rebuy(startingCents.value)
+  showBroke.value = false
+}
+function onNewSession() {
+  store.clearSession()
+  showBroke.value = false
+  navigateTo('/')
+}
+function onSaveSession() {
+  downloadText('roulette-session.csv', sessionToCsv(store.sessionLog))
+  showBroke.value = false
+  navigateTo('/history')
+}
+
 onMounted(() => {
   if (store.phase === 'setup' && !store.loadFromLocalStorage()) {
     navigateTo('/')
@@ -145,6 +200,7 @@ onMounted(() => {
   }
   reducedMotion.value = typeof window !== 'undefined'
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (store.bankrollCents === 0 && store.totalStakedCents === 0) showBroke.value = true
 })
 
 function onPlace(descriptor: { type: BetType, numbers: Pocket[] }) {
@@ -181,6 +237,7 @@ async function spin() {
   } else {
     store.showFlash('No win this spin', 'neutral', 3500)
   }
+  if (store.bankrollCents === 0) showBroke.value = true
 }
 </script>
 
