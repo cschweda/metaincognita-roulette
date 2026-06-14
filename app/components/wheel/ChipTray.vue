@@ -12,7 +12,9 @@
       :class="chipClass(c)"
       :aria-label="'Chip ' + formatCents(c)"
       :aria-pressed="c === selected"
+      style="touch-action: none"
       @click="emit('select', c)"
+      @pointerdown="(ev) => emit('dragstart', { cents: c, ev })"
     >
       {{ formatCents(c) }}
     </button>
@@ -29,6 +31,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   select: [cents: number]
+  dragstart: [payload: { cents: number, ev: PointerEvent }]
 }>()
 
 const chips = rouletteConfig.chips as readonly number[]

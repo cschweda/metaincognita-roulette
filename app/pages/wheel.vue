@@ -61,6 +61,7 @@
         <ChipTray
           :selected="store.selectedChipCents"
           @select="store.setSelectedChip"
+          @dragstart="(p) => dragStart(p.cents, p.ev)"
         />
         <BetControls
           :spinning="store.phase === 'spinning'"
@@ -71,6 +72,13 @@
           @repeat="store.repeatLastBet"
         />
       </div>
+    </div>
+    <div
+      v-if="dragActive"
+      class="fixed z-50 pointer-events-none w-10 h-10 -ml-5 -mt-5 rounded-full border-2 border-white/70 flex items-center justify-center text-xs font-bold text-white shadow-lg"
+      :style="{ left: dragX + 'px', top: dragY + 'px', background: 'var(--chip-red)' }"
+    >
+      {{ formatCents(dragChipCents) }}
     </div>
   </div>
 </template>
@@ -89,6 +97,10 @@ import BetControls from '~/components/wheel/BetControls.vue'
 import StatsPanel from '~/components/wheel/StatsPanel.vue'
 
 const store = useRouletteStore()
+const { dragging: dragActive, chipCents: dragChipCents, x: dragX, y: dragY, start: dragStart } = useChipDrag((descriptor, cents) => {
+  lastNet.value = null
+  store.placeBet(descriptor, cents)
+})
 const wheelRef = ref<{ spinTo: (p: Pocket) => Promise<void> } | null>(null)
 const reducedMotion = ref(false)
 const historyPockets = computed(() => store.spinHistory.map(s => s.pocket))
