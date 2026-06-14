@@ -1,7 +1,7 @@
 <template>
   <div class="flex-1 flex flex-col min-h-0 overflow-auto">
-    <header class="px-4 py-3 border-b border-neutral-800">
-      <div class="flex items-center justify-between gap-3">
+    <header class="py-3 border-b border-neutral-800">
+      <div class="flex items-center justify-between gap-3 max-w-3xl mx-auto w-full px-4">
         <h1 class="text-lg font-semibold text-neutral-100">
           Session history
         </h1>
@@ -16,7 +16,7 @@
           Download CSV
         </UButton>
       </div>
-      <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto w-full px-4">
         <div class="rounded-lg bg-neutral-900/70 border border-neutral-800 px-3 py-2">
           <div class="text-xs text-neutral-400">
             Spins
@@ -58,7 +58,7 @@
       </div>
     </header>
 
-    <div class="p-4">
+    <div class="p-4 max-w-3xl mx-auto w-full">
       <p
         v-if="store.spinHistory.length === 0"
         class="text-sm text-neutral-400"
@@ -67,7 +67,7 @@
       </p>
       <ul
         v-else
-        class="flex flex-col gap-1 max-w-xl"
+        class="flex flex-col gap-1"
       >
         <li
           v-for="(s, i) in store.spinHistory"

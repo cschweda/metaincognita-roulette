@@ -1,7 +1,7 @@
 <template>
   <div class="flex-1 flex flex-col min-h-0 overflow-auto">
-    <header class="px-4 py-3 border-b border-neutral-800">
-      <div>
+    <header class="py-3 border-b border-neutral-800">
+      <div class="max-w-3xl mx-auto w-full px-4">
         <h1 class="text-lg font-semibold text-neutral-100">
           Learn
         </h1>
@@ -10,7 +10,7 @@
         </p>
       </div>
     </header>
-    <div class="p-4 flex flex-col gap-6 max-w-3xl">
+    <div class="p-4 flex flex-col gap-6 max-w-3xl mx-auto w-full">
       <LearnHowItWorks />
       <LearnStrategy />
       <LearnHistory />

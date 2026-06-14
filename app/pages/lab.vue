@@ -1,7 +1,7 @@
 <template>
   <div class="flex-1 flex flex-col min-h-0 overflow-auto">
-    <header class="px-4 py-3 border-b border-neutral-800">
-      <div class="flex items-start justify-between gap-4">
+    <header class="py-3 border-b border-neutral-800">
+      <div class="flex items-start justify-between gap-4 max-w-3xl mx-auto w-full px-4">
         <div>
           <h1 class="text-lg font-semibold text-neutral-100">
             The Lab
@@ -23,7 +23,7 @@
         </UButton>
       </div>
     </header>
-    <div class="p-4 flex flex-col gap-6 max-w-3xl">
+    <div class="p-4 flex flex-col gap-6 max-w-3xl mx-auto w-full">
       <LabHardcoreStats />
       <LabWheelSandbox />
     </div>
