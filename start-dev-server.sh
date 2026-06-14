@@ -54,4 +54,6 @@ if [ -z "$has_dev" ]; then
 fi
 
 bold "▸ Starting dev server on http://localhost:$PORT …"
-exec pnpm dev -- --port "$PORT"
+# Pass the port via env (PORT) — appending `-- --port` to the compound `pnpm clean && nuxt dev`
+# script mangles nuxi's arg parsing and makes it serve the default welcome page.
+exec env PORT="$PORT" pnpm dev

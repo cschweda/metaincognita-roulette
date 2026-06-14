@@ -22,5 +22,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   colorMode: { preference: 'dark', fallback: 'dark' },
   compatibilityDate: '2025-01-15',
+  vite: {
+    optimizeDeps: { include: ['@vue/devtools-core', '@vue/devtools-kit'] }
+  },
   eslint: { config: { stylistic: { commaDangle: 'never', braceStyle: '1tbs' } } }
 })

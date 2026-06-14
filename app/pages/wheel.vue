@@ -21,51 +21,55 @@
       </div>
     </header>
     <div
-      class="flex-1 flex flex-col items-center justify-center gap-4 py-4 overflow-auto"
+      class="flex-1 flex flex-col lg:flex-row items-center lg:justify-center gap-6 p-4 overflow-auto"
       :style="{ background: 'var(--felt-dark)' }"
     >
-      <RouletteWheel
-        ref="wheelRef"
-        :variant="store.variant"
-        :reduced-motion="reducedMotion"
-        :size="460"
-      />
-      <ResultBadge
-        :latest="store.revealPocket"
-        :history="historyPockets"
-      />
-
-      <!-- Win / loss banner -->
-      <div
-        v-if="lastNet !== null && store.phase !== 'spinning'"
-        class="win-loss-banner"
-        :class="lastNet > 0 ? 'banner-win' : 'banner-neutral'"
-      >
-        <template v-if="lastNet > 0">
-          Won {{ formatCents(lastNet) }}
-        </template>
-        <template v-else>
-          {{ lastNet < 0 ? 'Lost ' + formatCents(-lastNet) : 'No win' }}
-        </template>
+      <!-- Left: the wheel + result -->
+      <div class="flex flex-col items-center gap-3 shrink-0">
+        <RouletteWheel
+          ref="wheelRef"
+          :variant="store.variant"
+          :reduced-motion="reducedMotion"
+          :size="420"
+        />
+        <ResultBadge
+          :latest="store.revealPocket"
+          :history="historyPockets"
+        />
+        <div
+          v-if="lastNet !== null && store.phase !== 'spinning'"
+          class="win-loss-banner"
+          :class="lastNet > 0 ? 'banner-win' : 'banner-neutral'"
+        >
+          <template v-if="lastNet > 0">
+            Won {{ formatCents(lastNet) }}
+          </template>
+          <template v-else>
+            {{ lastNet < 0 ? 'Lost ' + formatCents(-lastNet) : 'No win' }}
+          </template>
+        </div>
       </div>
 
-      <RouletteMat
-        :variant="store.variant"
-        :bets="store.bets"
-        @place="onPlace"
-      />
-      <ChipTray
-        :selected="store.selectedChipCents"
-        @select="store.setSelectedChip"
-      />
-      <BetControls
-        :spinning="store.phase === 'spinning'"
-        :total-staked="store.totalStakedCents"
-        :can-repeat="store.lastRoundBets.length > 0"
-        @spin="spin"
-        @clear="store.clearBets"
-        @repeat="store.repeatLastBet"
-      />
+      <!-- Right: the betting layout -->
+      <div class="flex flex-col items-center gap-4">
+        <RouletteMat
+          :variant="store.variant"
+          :bets="store.bets"
+          @place="onPlace"
+        />
+        <ChipTray
+          :selected="store.selectedChipCents"
+          @select="store.setSelectedChip"
+        />
+        <BetControls
+          :spinning="store.phase === 'spinning'"
+          :total-staked="store.totalStakedCents"
+          :can-repeat="store.lastRoundBets.length > 0"
+          @spin="spin"
+          @clear="store.clearBets"
+          @repeat="store.repeatLastBet"
+        />
+      </div>
     </div>
   </div>
 </template>
