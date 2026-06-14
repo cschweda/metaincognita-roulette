@@ -7,7 +7,7 @@ import { RouletteGame, type RoundResult } from '../engine/round'
 import type { WheelCondition } from '../engine/physics'
 import {
   SESSION_VERSION, serializeSession, parseSession,
-  type RouletteSession, type SpinRecord, type SessionStats, type SpinLogEntry
+  type RouletteSession, type SpinRecord, type SessionStats, type SpinLogEntry, type SpinSpeed
 } from './sessionState'
 
 export type Phase = 'setup' | 'betting' | 'spinning' | 'resolved'
@@ -57,7 +57,8 @@ export const useRouletteStore = defineStore('roulette', {
     game: null as RouletteGame | null,
     revealPocket: null as Pocket | null,
     lastRoundResult: null as RoundResult | null,
-    wheelCondition: {} as WheelCondition
+    wheelCondition: {} as WheelCondition,
+    spinSpeed: 'realistic' as SpinSpeed
   }),
   getters: {
     preset: s => rouletteConfig.presets.find(p => p.id === s.presetId) ?? rouletteConfig.presets[0]!,
@@ -79,6 +80,7 @@ export const useRouletteStore = defineStore('roulette', {
       this.bankrollHistory = [args.bankrollCents]
       this.sessionLog = []
       this.wheelCondition = {}
+      this.spinSpeed = 'realistic'
       this.game = markRaw(new RouletteGame({ variant: preset.variant, evenMoney: preset.evenMoney }, seed ?? cryptoSeed(), {}))
       this.revealPocket = null
       this.phase = 'betting'
@@ -98,7 +100,8 @@ export const useRouletteStore = defineStore('roulette', {
         sessionStats: this.sessionStats,
         bankrollHistory: this.bankrollHistory,
         wheelCondition: this.wheelCondition,
-        sessionLog: this.sessionLog
+        sessionLog: this.sessionLog,
+        spinSpeed: this.spinSpeed
       }
     },
     saveToLocalStorage() {
@@ -131,6 +134,7 @@ export const useRouletteStore = defineStore('roulette', {
       this.bankrollHistory = session.bankrollHistory
       this.wheelCondition = session.wheelCondition
       this.sessionLog = session.sessionLog
+      this.spinSpeed = session.spinSpeed
       this.game = markRaw(new RouletteGame({ variant: this.variant, evenMoney: this.evenMoney }, cryptoSeed(), session.wheelCondition))
       this.clampSelectedChip()
       this.phase = 'betting'
@@ -224,6 +228,10 @@ export const useRouletteStore = defineStore('roulette', {
     },
     dismissFlash() {
       this.flash = null
+    },
+    setSpinSpeed(s: SpinSpeed) {
+      this.spinSpeed = s
+      this.saveToLocalStorage()
     },
     /** Re-buy: add chips to the bankroll. The loss still stands in the session net. */
     rebuy(cents: number) {

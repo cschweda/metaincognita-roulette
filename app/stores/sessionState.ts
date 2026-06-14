@@ -4,6 +4,8 @@ import type { WheelCondition } from '../engine/physics'
 
 export const SESSION_VERSION = 1 as const
 
+export type SpinSpeed = 'realistic' | 'quick'
+
 export interface SpinRecord { pocket: Pocket, netCents: number }
 export interface SessionStats { spins: number, wageredCents: number, netCents: number }
 
@@ -29,6 +31,7 @@ export interface RouletteSession {
   bankrollHistory: number[]
   wheelCondition: WheelCondition
   sessionLog: SpinLogEntry[]
+  spinSpeed: SpinSpeed
 }
 
 export function serializeSession(s: RouletteSession): string {
@@ -56,5 +59,6 @@ export function parseSession(raw: string): RouletteSession | null {
   if (!Array.isArray(session.bankrollHistory)) session.bankrollHistory = []
   if (typeof session.wheelCondition !== 'object' || session.wheelCondition === null) session.wheelCondition = {}
   if (!Array.isArray(session.sessionLog)) session.sessionLog = []
+  if (session.spinSpeed !== 'quick') session.spinSpeed = 'realistic'
   return session
 }

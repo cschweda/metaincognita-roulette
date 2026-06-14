@@ -16,9 +16,11 @@ const props = withDefaults(defineProps<{
   variant: 'single' | 'double'
   reducedMotion?: boolean
   size?: number
+  speed?: 'realistic' | 'quick'
 }>(), {
   reducedMotion: false,
-  size: 460
+  size: 460,
+  speed: 'realistic'
 })
 
 const emit = defineEmits<{
@@ -271,8 +273,9 @@ function spinTo(pocket: Pocket): Promise<void> {
     }
 
     // Full animation — port of v6 spin(), but target is determined externally (targetIdx)
-    const Ttot = 10.0
-    const revs = 7 + Math.floor(Math.random() * 3) // ~7–9 revolutions
+    const quick = props.speed === 'quick'
+    const Ttot = quick ? 3.8 : 10.0
+    const revs = (quick ? 4 : 7) + Math.floor(Math.random() * (quick ? 2 : 3)) // quick 4–5, realistic 7–9
     const ballDir = -1 // opposite the rotor
     const ballStart = Math.random() * 2 * Math.PI
     const A_final = Math.random() * 2 * Math.PI // ball rests at a random clock position

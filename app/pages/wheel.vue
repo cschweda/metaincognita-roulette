@@ -24,8 +24,20 @@
           :aria-live="resultTone === 'none' ? 'off' : 'polite'"
         >{{ resultText }}</span>
       </div>
-      <div class="text-xs text-neutral-400 flex-1 min-w-0 text-right">
-        {{ store.preset.label }} · <span class="font-mono text-primary-400">{{ store.preset.edgePct.toFixed(2) }}%</span>
+      <div class="flex-1 min-w-0 flex items-center justify-end gap-2">
+        <span class="text-xs text-neutral-400 truncate">{{ store.preset.label }} · <span class="font-mono text-primary-400">{{ store.preset.edgePct.toFixed(2) }}%</span></span>
+        <button
+          type="button"
+          class="speed-toggle"
+          :title="`Spin speed: ${store.spinSpeed === 'quick' ? 'Quick' : 'Realistic'} — click to switch`"
+          @click="store.setSpinSpeed(store.spinSpeed === 'quick' ? 'realistic' : 'quick')"
+        >
+          <UIcon
+            name="i-lucide-timer"
+            class="w-3.5 h-3.5"
+          />
+          {{ store.spinSpeed === 'quick' ? 'Quick' : 'Realistic' }}
+        </button>
       </div>
     </header>
     <div
@@ -41,6 +53,7 @@
             :variant="store.variant"
             :reduced-motion="reducedMotion"
             :size="380"
+            :speed="store.spinSpeed"
           />
           <ResultBadge
             :latest="store.revealPocket"
@@ -278,5 +291,24 @@ async function spin() {
   background: rgba(148, 163, 184, 0.12);
   color: #94a3b8;
   border-color: rgba(148, 163, 184, 0.25);
+}
+
+.speed-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--gold, #d4a847);
+  border: 1px solid rgba(212, 168, 71, 0.4);
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.speed-toggle:hover {
+  background: rgba(212, 168, 71, 0.1);
 }
 </style>
