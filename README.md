@@ -4,6 +4,7 @@
 
 # Roulette Trainer
 
+![CI](https://github.com/cschweda/metaincognita-roulette/actions/workflows/ci.yml/badge.svg)
 ![version](https://img.shields.io/badge/version-0.1.0-d4a847)
 ![tests](https://img.shields.io/badge/tests-134%20passing-16a34a)
 ![typescript](https://img.shields.io/badge/typescript-strict-3178c6)
