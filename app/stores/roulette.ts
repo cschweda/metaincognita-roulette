@@ -26,6 +26,10 @@ function cryptoSeed(): number {
   return Math.floor(Math.random() * 0xffffffff) >>> 0
 }
 
+let flashSeq = 0
+
+type FlashTone = 'error' | 'info' | 'win' | 'loss' | 'neutral'
+
 interface InitArgs {
   presetId: string
   playerName: string
@@ -49,6 +53,7 @@ export const useRouletteStore = defineStore('roulette', {
     sessionLog: [] as SpinLogEntry[],
     lastRoundBets: [] as Bet[],
     storageWarning: false,
+    flash: null as { id: number, text: string, tone: FlashTone } | null,
     game: null as RouletteGame | null,
     revealPocket: null as Pocket | null,
     wheelCondition: {} as WheelCondition
@@ -205,6 +210,17 @@ export const useRouletteStore = defineStore('roulette', {
     },
     readyForNextSpin() {
       this.phase = 'betting'
+    },
+    /** Show a transient toast message; it auto-dismisses after 3s (latest wins). */
+    showFlash(text: string, tone: FlashTone = 'error', durationMs = 3000) {
+      const id = ++flashSeq
+      this.flash = { id, text, tone }
+      setTimeout(() => {
+        if (this.flash?.id === id) this.flash = null
+      }, durationMs)
+    },
+    dismissFlash() {
+      this.flash = null
     }
   }
 })

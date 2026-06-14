@@ -9,7 +9,7 @@
       block
       class="spin-btn"
       :loading="spinning"
-      :disabled="spinning || totalStaked === 0"
+      :disabled="spinning"
       @click="emit('spin')"
     >
       {{ spinning ? 'Spinning…' : 'Spin' }}

@@ -172,5 +172,7 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
         />
       </template>
     </UModal>
+
+    <FlashToast />
   </div>
 </template>

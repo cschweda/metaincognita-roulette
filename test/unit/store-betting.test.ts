@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useRouletteStore } from '../../app/stores/roulette'
 
@@ -52,6 +52,17 @@ describe('you can never stake more than your bankroll', () => {
     expect(store.bankrollCents).toBe(9_500)
     store.clearBets()
     expect(store.bankrollCents).toBe(10_000)
+  })
+
+  it('showFlash sets a transient message that auto-clears after 3s', () => {
+    vi.useFakeTimers()
+    const store = init(10_000, 100)
+    store.showFlash('Place a bet before spinning.')
+    expect(store.flash?.text).toBe('Place a bet before spinning.')
+    expect(store.flash?.tone).toBe('error')
+    vi.advanceTimersByTime(3000)
+    expect(store.flash).toBeNull()
+    vi.useRealTimers()
   })
 
   it('repeatLastBet refuses when the prior round costs more than the bankroll', () => {

@@ -72,7 +72,7 @@
             :can-repeat="store.lastRoundBets.length > 0"
             @spin="spin"
             @clear="store.clearBets"
-            @repeat="store.repeatLastBet"
+            @repeat="onRepeat"
           />
         </div>
       </div>
@@ -142,17 +142,39 @@ onMounted(() => {
 })
 
 function onPlace(descriptor: { type: BetType, numbers: Pocket[] }) {
+  if (store.selectedChipCents === 0) {
+    store.showFlash('Out of chips for this round.')
+    return
+  }
   lastNet.value = null
   store.placeBet(descriptor, store.selectedChipCents)
 }
 
+function onRepeat() {
+  if (store.repeatLastBet()) lastNet.value = null
+  else store.showFlash('Not enough in your bankroll to repeat that bet.')
+}
+
 async function spin() {
-  if (store.phase === 'spinning' || store.totalStakedCents === 0 || !wheelRef.value) return
+  if (store.phase === 'spinning') return
+  if (store.totalStakedCents === 0) {
+    store.showFlash('Place a bet before spinning.')
+    return
+  }
+  if (!wheelRef.value) return
   const result = store.computeSpin()
   await wheelRef.value.spinTo(result.pocket)
   store.commitSpin(result)
   lastNet.value = result.netCents
   store.readyForNextSpin()
+  const net = result.netCents
+  if (net > 0) {
+    store.showFlash('Won ' + formatCents(net), 'win', 3500)
+  } else if (net < 0) {
+    store.showFlash('Lost ' + formatCents(-net), 'loss', 3500)
+  } else {
+    store.showFlash('No win this spin', 'neutral', 3500)
+  }
 }
 </script>
 
