@@ -7,7 +7,7 @@ import { RouletteGame, type RoundResult } from '../engine/round'
 import type { WheelCondition } from '../engine/physics'
 import {
   SESSION_VERSION, serializeSession, parseSession,
-  type RouletteSession, type SpinRecord, type SessionStats
+  type RouletteSession, type SpinRecord, type SessionStats, type SpinLogEntry
 } from './sessionState'
 
 export type Phase = 'setup' | 'betting' | 'spinning' | 'resolved'
@@ -46,6 +46,7 @@ export const useRouletteStore = defineStore('roulette', {
     spinHistory: [] as SpinRecord[],
     sessionStats: { spins: 0, wageredCents: 0, netCents: 0 } as SessionStats,
     bankrollHistory: [] as number[],
+    sessionLog: [] as SpinLogEntry[],
     lastRoundBets: [] as Bet[],
     storageWarning: false,
     game: null as RouletteGame | null,
@@ -69,6 +70,7 @@ export const useRouletteStore = defineStore('roulette', {
       this.spinHistory = []
       this.sessionStats = { spins: 0, wageredCents: 0, netCents: 0 }
       this.bankrollHistory = [args.bankrollCents]
+      this.sessionLog = []
       this.wheelCondition = {}
       this.game = markRaw(new RouletteGame({ variant: preset.variant, evenMoney: preset.evenMoney }, seed ?? cryptoSeed(), {}))
       this.revealPocket = null
@@ -88,7 +90,8 @@ export const useRouletteStore = defineStore('roulette', {
         spinHistory: this.spinHistory,
         sessionStats: this.sessionStats,
         bankrollHistory: this.bankrollHistory,
-        wheelCondition: this.wheelCondition
+        wheelCondition: this.wheelCondition,
+        sessionLog: this.sessionLog
       }
     },
     saveToLocalStorage() {
@@ -120,6 +123,7 @@ export const useRouletteStore = defineStore('roulette', {
       this.sessionStats = session.sessionStats
       this.bankrollHistory = session.bankrollHistory
       this.wheelCondition = session.wheelCondition
+      this.sessionLog = session.sessionLog
       this.game = markRaw(new RouletteGame({ variant: this.variant, evenMoney: this.evenMoney }, cryptoSeed(), session.wheelCondition))
       this.phase = 'betting'
       return true
@@ -150,6 +154,8 @@ export const useRouletteStore = defineStore('roulette', {
       this.sessionStats.spins += 1
       this.sessionStats.wageredCents += result.totalStakeCents
       this.sessionStats.netCents += result.netCents
+      this.sessionLog.push({ pocket: result.pocket, stakeCents: result.totalStakeCents, returnCents: result.totalReturnCents, netCents: result.netCents, bankrollCents: this.bankrollCents })
+      this.sessionLog = this.sessionLog.slice(-500)
       this.revealPocket = result.pocket
       this.lastRoundBets = this.bets
       this.bets = []

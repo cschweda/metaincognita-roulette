@@ -7,6 +7,14 @@ export const SESSION_VERSION = 1 as const
 export interface SpinRecord { pocket: Pocket, netCents: number }
 export interface SessionStats { spins: number, wageredCents: number, netCents: number }
 
+export interface SpinLogEntry {
+  pocket: Pocket
+  stakeCents: number
+  returnCents: number
+  netCents: number
+  bankrollCents: number
+}
+
 export interface RouletteSession {
   version: typeof SESSION_VERSION
   presetId: string
@@ -20,6 +28,7 @@ export interface RouletteSession {
   sessionStats: SessionStats
   bankrollHistory: number[]
   wheelCondition: WheelCondition
+  sessionLog: SpinLogEntry[]
 }
 
 export function serializeSession(s: RouletteSession): string {
@@ -46,5 +55,6 @@ export function parseSession(raw: string): RouletteSession | null {
   const session = data as RouletteSession
   if (!Array.isArray(session.bankrollHistory)) session.bankrollHistory = []
   if (typeof session.wheelCondition !== 'object' || session.wheelCondition === null) session.wheelCondition = {}
+  if (!Array.isArray(session.sessionLog)) session.sessionLog = []
   return session
 }

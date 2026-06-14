@@ -13,7 +13,8 @@ const sample: RouletteSession = {
   spinHistory: [],
   sessionStats: { spins: 0, wageredCents: 0, netCents: 0 },
   bankrollHistory: [],
-  wheelCondition: {}
+  wheelCondition: {},
+  sessionLog: []
 }
 
 describe('session persistence (versioned)', () => {

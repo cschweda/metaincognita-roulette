@@ -1,9 +1,21 @@
 <template>
   <div class="flex-1 flex flex-col min-h-0 overflow-auto">
     <header class="px-4 py-3 border-b border-neutral-800">
-      <h1 class="text-lg font-semibold text-neutral-100">
-        Session history
-      </h1>
+      <div class="flex items-center justify-between gap-3">
+        <h1 class="text-lg font-semibold text-neutral-100">
+          Session history
+        </h1>
+        <UButton
+          size="sm"
+          color="primary"
+          variant="soft"
+          :disabled="store.sessionLog.length === 0"
+          aria-label="Download session as CSV"
+          @click="handleDownload"
+        >
+          Download CSV
+        </UButton>
+      </div>
       <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="rounded-lg bg-neutral-900/70 border border-neutral-800 px-3 py-2">
           <div class="text-xs text-neutral-400">
@@ -85,10 +97,16 @@ import { onMounted } from 'vue'
 import { useRouletteStore } from '~/stores/roulette'
 import { formatCents, formatSignedCents } from '~/utils/format'
 import { colorOf, type Pocket } from '~/engine/wheel'
+import { sessionToCsv } from '~/utils/sessionCsv'
+import { downloadText } from '~/utils/download'
 
 const store = useRouletteStore()
 const COLORS: Record<string, string> = { red: 'var(--chip-red)', black: '#262626', green: 'var(--chip-green)' }
 const bg = (p: Pocket) => COLORS[colorOf(p)]!
+
+function handleDownload() {
+  downloadText('roulette-session.csv', sessionToCsv(store.sessionLog))
+}
 
 onMounted(() => {
   if (store.phase === 'setup' && !store.loadFromLocalStorage()) navigateTo('/')
