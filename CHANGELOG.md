@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A **Drills practice page** (`/drills`) — quiz-style payout and house-edge drills that reuse the engine to build bet literacy. Each question is generated deterministically from a seed (so it's reproducible and testable) and teaches the *why*: every bet on a wheel shares the same edge, single-zero beats double-zero, and Surrender softens the green pockets. Tracks streak and correct / total for the session.
 - A **Realistic / Quick spin-speed toggle** in the play-screen header — persisted to localStorage so the preference survives page reloads. Realistic keeps the approved ~10 s feel; Quick settles in ~3.8 s.
 - A **"Last spin" breakdown card** in the play-screen dashboard — a per-bet, won/lost summary (each bet's label, net, and the winning pocket) so it's obvious *why* you won or lost.
 - A subtle **"ready to spin" pulse** on the Spin button when a bet is placed and a spin is possible (absolutely positioned — no button or layout shift).
