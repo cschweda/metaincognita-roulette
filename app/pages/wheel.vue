@@ -52,6 +52,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouletteStore } from '~/stores/roulette'
 import { formatCents } from '~/utils/format'
 import type { Pocket } from '~/engine/wheel'
+import RouletteWheel from '~/components/wheel/RouletteWheel.vue'
+import ResultBadge from '~/components/wheel/ResultBadge.vue'
 
 const store = useRouletteStore()
 const wheelRef = ref<{ spinTo: (p: Pocket) => Promise<void> } | null>(null)
