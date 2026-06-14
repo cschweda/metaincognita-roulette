@@ -21,64 +21,71 @@
       </div>
     </header>
     <div
-      class="flex-1 flex flex-col lg:flex-row items-center lg:justify-center gap-6 p-4 overflow-auto"
+      class="flex-1 flex flex-col gap-4 p-4 overflow-auto"
       :style="{ background: 'var(--felt-dark)' }"
     >
-      <!-- Left: the wheel + result -->
-      <div class="flex flex-col items-center gap-3 shrink-0">
-        <RouletteWheel
-          ref="wheelRef"
-          :variant="store.variant"
-          :reduced-motion="reducedMotion"
-          :size="380"
-        />
-        <div class="flex items-center justify-center gap-5">
-          <BankrollStack
-            :bankroll-cents="store.bankrollCents"
-            :starting-cents="startingCents"
+      <!-- Top: the wheel and the betting layout, aligned to the top -->
+      <div class="flex flex-col lg:flex-row items-center lg:items-start lg:justify-center gap-6">
+        <!-- Left: the wheel + result -->
+        <div class="flex flex-col items-center gap-3 shrink-0">
+          <RouletteWheel
+            ref="wheelRef"
+            :variant="store.variant"
+            :reduced-motion="reducedMotion"
+            :size="380"
           />
-          <ResultBadge
-            :latest="store.revealPocket"
-            :history="historyPockets"
+          <div class="flex items-center justify-center gap-5">
+            <BankrollStack
+              :bankroll-cents="store.bankrollCents"
+              :starting-cents="startingCents"
+            />
+            <ResultBadge
+              :latest="store.revealPocket"
+              :history="historyPockets"
+            />
+          </div>
+          <div
+            v-if="lastNet !== null && store.phase !== 'spinning'"
+            class="win-loss-banner"
+            :class="lastNet > 0 ? 'banner-win' : 'banner-neutral'"
+          >
+            <template v-if="lastNet > 0">
+              Won {{ formatCents(lastNet) }}
+            </template>
+            <template v-else>
+              {{ lastNet < 0 ? 'Lost ' + formatCents(-lastNet) : 'No win' }}
+            </template>
+          </div>
+        </div>
+
+        <!-- Right: the betting layout -->
+        <div class="flex flex-col items-center gap-4">
+          <RouletteMat
+            :variant="store.variant"
+            :bets="store.bets"
+            @place="onPlace"
+          />
+          <ChipTray
+            :selected="store.selectedChipCents"
+            :max-cents="store.bankrollCents"
+            @select="store.setSelectedChip"
+            @dragstart="(p) => dragStart(p.cents, p.ev)"
+          />
+          <BetControls
+            :spinning="store.phase === 'spinning'"
+            :total-staked="store.totalStakedCents"
+            :can-repeat="store.lastRoundBets.length > 0"
+            @spin="spin"
+            @clear="store.clearBets"
+            @repeat="store.repeatLastBet"
           />
         </div>
-        <div
-          v-if="lastNet !== null && store.phase !== 'spinning'"
-          class="win-loss-banner"
-          :class="lastNet > 0 ? 'banner-win' : 'banner-neutral'"
-        >
-          <template v-if="lastNet > 0">
-            Won {{ formatCents(lastNet) }}
-          </template>
-          <template v-else>
-            {{ lastNet < 0 ? 'Lost ' + formatCents(-lastNet) : 'No win' }}
-          </template>
-        </div>
-        <StatsPanel />
-        <EvAdvisor />
       </div>
 
-      <!-- Right: the betting layout -->
-      <div class="flex flex-col items-center gap-4">
-        <RouletteMat
-          :variant="store.variant"
-          :bets="store.bets"
-          @place="onPlace"
-        />
-        <ChipTray
-          :selected="store.selectedChipCents"
-          :max-cents="store.bankrollCents"
-          @select="store.setSelectedChip"
-          @dragstart="(p) => dragStart(p.cents, p.ev)"
-        />
-        <BetControls
-          :spinning="store.phase === 'spinning'"
-          :total-staked="store.totalStakedCents"
-          :can-repeat="store.lastRoundBets.length > 0"
-          @spin="spin"
-          @clear="store.clearBets"
-          @repeat="store.repeatLastBet"
-        />
+      <!-- Bottom: session + expected-value dashboard, side by side -->
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-5xl mx-auto">
+        <StatsPanel class="flex-1 min-w-0" />
+        <EvAdvisor class="flex-1 min-w-0" />
       </div>
     </div>
     <div
