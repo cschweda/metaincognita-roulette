@@ -6,13 +6,13 @@
     >
       Storage is full — playing in memory only; this session won't be saved.
     </div>
-    <header class="flex items-center justify-between gap-3 px-4 py-2 border-b border-neutral-800">
+    <header class="flex items-center justify-between gap-2 sm:gap-3 px-3 sm:px-4 py-2 border-b border-neutral-800">
       <div class="text-sm text-neutral-300 flex-1 min-w-0 truncate">
         {{ store.playerName }}
       </div>
-      <div class="flex items-center gap-3 shrink-0">
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
         <span
-          class="font-mono text-lg"
+          class="font-mono text-base sm:text-lg"
           :style="{ color: 'var(--cream)' }"
         >
           {{ formatCents(store.bankrollCents) }}
@@ -25,10 +25,11 @@
         >{{ resultText }}</span>
       </div>
       <div class="flex-1 min-w-0 flex items-center justify-end gap-2">
-        <span class="text-xs text-neutral-400 truncate">{{ store.preset.label }} · <span class="font-mono text-primary-400">{{ store.preset.edgePct.toFixed(2) }}%</span></span>
+        <span class="text-xs text-neutral-400 truncate min-w-0"><span class="hidden sm:inline">{{ store.preset.label }} · </span><span class="font-mono text-primary-400">{{ store.preset.edgePct.toFixed(2) }}%</span></span>
         <button
           type="button"
-          class="speed-toggle"
+          class="speed-toggle shrink-0"
+          :aria-label="`Spin speed: ${store.spinSpeed === 'quick' ? 'Quick' : 'Realistic'} — click to switch`"
           :title="`Spin speed: ${store.spinSpeed === 'quick' ? 'Quick' : 'Realistic'} — click to switch`"
           @click="store.setSpinSpeed(store.spinSpeed === 'quick' ? 'realistic' : 'quick')"
         >
@@ -36,7 +37,7 @@
             name="i-lucide-timer"
             class="w-3.5 h-3.5"
           />
-          {{ store.spinSpeed === 'quick' ? 'Quick' : 'Realistic' }}
+          <span class="hidden sm:inline">{{ store.spinSpeed === 'quick' ? 'Quick' : 'Realistic' }}</span>
         </button>
       </div>
     </header>
@@ -47,12 +48,12 @@
       <!-- Top: the wheel and the betting layout, aligned to the top -->
       <div class="flex flex-col lg:flex-row items-center lg:items-start lg:justify-center gap-6">
         <!-- Left: the wheel + result -->
-        <div class="flex flex-col items-center gap-3 shrink-0">
+        <div class="flex flex-col items-center gap-3 shrink-0 w-full lg:w-auto">
           <RouletteWheel
             ref="wheelRef"
             :variant="store.variant"
             :reduced-motion="reducedMotion"
-            :size="380"
+            :size="wheelSize"
             :speed="store.spinSpeed"
           />
           <ResultBadge
@@ -62,12 +63,32 @@
         </div>
 
         <!-- Right: the betting layout -->
-        <div class="flex flex-col items-center gap-4">
-          <RouletteMat
-            :variant="store.variant"
-            :bets="store.bets"
-            @place="onPlace"
-          />
+        <div class="flex flex-col items-center gap-4 w-full lg:max-w-[700px] min-w-0">
+          <!-- The betting mat has a fixed pixel geometry (its inside-bet hotspots
+               are computed from constant cell sizes), so rather than resizing it
+               we measure the available width and scale-to-fit. transform: scale
+               keeps the hotspot geometry and click/drag hit-testing intact. -->
+          <div
+            ref="matFit"
+            class="w-full flex justify-center"
+          >
+            <div
+              class="relative"
+              :style="{ width: matScaledWidth + 'px', height: matScaledHeight + 'px' }"
+            >
+              <div
+                ref="matNatural"
+                class="absolute top-0 left-0 origin-top-left"
+                :style="{ transform: `scale(${matScale})` }"
+              >
+                <RouletteMat
+                  :variant="store.variant"
+                  :bets="store.bets"
+                  @place="onPlace"
+                />
+              </div>
+            </div>
+          </div>
           <ChipTray
             :selected="store.selectedChipCents"
             :max-cents="store.bankrollCents"
@@ -148,8 +169,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouletteStore } from '~/stores/roulette'
+import { useFitScale } from '~/composables/useFitScale'
 import { formatCents, formatSignedCents } from '~/utils/format'
 import { downloadText } from '~/utils/download'
 import { sessionToCsv } from '~/utils/sessionCsv'
@@ -175,6 +197,24 @@ const reducedMotion = ref(false)
 const historyPockets = computed(() => store.spinHistory.map(s => s.pocket))
 const lastNet = ref<number | null>(null)
 const startingCents = computed(() => store.bankrollHistory[0] ?? store.bankrollCents)
+
+// Responsive play surface ─────────────────────────────────────────────────────
+// Track the viewport width so the (canvas) wheel can shrink on narrow screens.
+// The RouletteWheel scales all of its geometry by `size`, so this is safe.
+const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1280)
+function onViewportResize(): void {
+  viewportWidth.value = window.innerWidth
+}
+const wheelSize = computed(() => Math.round(Math.max(300, Math.min(380, viewportWidth.value - 48))))
+
+// Scale-to-fit for the betting mat: the mat has a fixed pixel geometry (its
+// inside-bet hotspots are computed from constant cell sizes), so instead of
+// resizing it we measure the available width and apply transform: scale.
+const matFit = ref<HTMLElement | null>(null)
+const matNatural = ref<HTMLElement | null>(null)
+const { scale: matScale, naturalWidth: matNaturalWidth, naturalHeight: matNaturalHeight } = useFitScale(matFit, matNatural)
+const matScaledWidth = computed(() => Math.round(matNaturalWidth.value * matScale.value))
+const matScaledHeight = computed(() => Math.round(matNaturalHeight.value * matScale.value))
 
 const resultTone = computed<'none' | 'win' | 'loss' | 'neutral'>(() => {
   if (lastNet.value === null || store.phase === 'spinning') return 'none'
@@ -207,6 +247,8 @@ function onSaveSession() {
 }
 
 onMounted(() => {
+  window.addEventListener('resize', onViewportResize)
+  onViewportResize()
   if (store.phase === 'setup' && !store.loadFromLocalStorage()) {
     navigateTo('/')
     return
@@ -214,6 +256,10 @@ onMounted(() => {
   reducedMotion.value = typeof window !== 'undefined'
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (store.bankrollCents === 0 && store.totalStakedCents === 0) showBroke.value = true
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onViewportResize)
 })
 
 function onPlace(descriptor: { type: BetType, numbers: Pocket[] }) {
@@ -310,5 +356,15 @@ async function spin() {
 
 .speed-toggle:hover {
   background: rgba(212, 168, 71, 0.1);
+}
+
+/* On the smallest screens, let the result pill shrink so the header fits on
+   one line (it still reserves a little space to avoid layout shift). */
+@media (max-width: 639px) {
+  .result-pill {
+    min-width: 0;
+    font-size: 12px;
+    padding: 3px 8px;
+  }
 }
 </style>

@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The app is now **fully responsive and playable down to 390px wide** (the family guideline) while staying perfect on tablet and desktop — no horizontal page scrolling at any width. The fixed-geometry betting mat **scales to fit** narrow screens (preserving every pixel-accurate inside-bet hotspot for click and drag), the wheel canvas shrinks fluidly, and the play-screen header and bottom navigation compact gracefully on small screens.
 - The **Spin button** is now high-contrast casino gold instead of pink.
 - Enlarged the **Staked** total and the ready-to-spin pulse for at-a-glance visibility.
 - The ball clatters more visibly over the wheel deflectors as it settles.
