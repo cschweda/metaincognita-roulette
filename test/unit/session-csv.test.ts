@@ -1,16 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { SpinLogEntry } from '../../app/stores/sessionState'
-import { colorOf } from '../../app/engine/wheel'
-
-// Inline sessionToCsv logic to avoid ~/alias in unit environment.
-// This mirrors app/utils/sessionCsv.ts exactly, keeping the test self-contained.
-function sessionToCsv(log: SpinLogEntry[]): string {
-  const header = ['spin', 'number', 'color', 'staked_cents', 'returned_cents', 'net_cents', 'bankroll_cents']
-  const rows = log.map((e, i) =>
-    [i + 1, e.pocket, colorOf(e.pocket), e.stakeCents, e.returnCents, e.netCents, e.bankrollCents].join(',')
-  )
-  return [header.join(','), ...rows].join('\n') + '\n'
-}
+import { sessionToCsv } from '../../app/utils/sessionCsv'
 
 const sampleEntry: SpinLogEntry = {
   pocket: 7,
@@ -21,10 +11,10 @@ const sampleEntry: SpinLogEntry = {
 }
 
 describe('sessionToCsv', () => {
-  it('produces the correct header row', () => {
+  it('produces the correct header row (with the event column)', () => {
     const csv = sessionToCsv([sampleEntry])
     const firstLine = csv.split('\n')[0]
-    expect(firstLine).toBe('spin,number,color,staked_cents,returned_cents,net_cents,bankroll_cents')
+    expect(firstLine).toBe('spin,event,number,color,staked_cents,returned_cents,net_cents,bankroll_cents')
   })
 
   it('row count equals the log length', () => {
@@ -35,9 +25,22 @@ describe('sessionToCsv', () => {
     expect(lines.length).toBe(log.length + 1)
   })
 
-  it('sample row contains the correct number, color, and net', () => {
+  it('sample row contains the correct number, color, and net — legacy entries default to event "spin"', () => {
     const csv = sessionToCsv([sampleEntry])
-    expect(csv).toContain('1,7,red,500,18000,17500,117500')
+    expect(csv).toContain('1,spin,7,red,500,18000,17500,117500')
+  })
+
+  it('renders a rebuy row with an empty number/color and the amount as returned', () => {
+    const rebuy: SpinLogEntry = {
+      event: 'rebuy',
+      pocket: null,
+      stakeCents: 0,
+      returnCents: 20_000,
+      netCents: 0,
+      bankrollCents: 20_000
+    }
+    const csv = sessionToCsv([sampleEntry, rebuy])
+    expect(csv).toContain('2,rebuy,,,0,20000,0,20000')
   })
 
   it('returns empty (header-only) for an empty log', () => {

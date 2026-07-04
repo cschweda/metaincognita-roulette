@@ -6,7 +6,7 @@
 
 ![CI](https://github.com/cschweda/metaincognita-roulette/actions/workflows/ci.yml/badge.svg)
 ![version](https://img.shields.io/badge/version-0.1.0-d4a847)
-![tests](https://img.shields.io/badge/tests-134%20passing-16a34a)
+![tests](https://img.shields.io/badge/tests-156%20passing-16a34a)
 ![typescript](https://img.shields.io/badge/typescript-strict-3178c6)
 ![license](https://img.shields.io/badge/license-MIT-1f6feb)
 
@@ -20,8 +20,8 @@ A single-player, money-free **roulette simulator that is fun to play and honest 
 - **A real forward-physics wheel as the source of truth.** The ball travels ≥4 revolutions opposite the rotor, leaves the track near a diamond, and is captured at a rotor-relative angle — and *wherever it lands is the result*. Deterministic and seeded, so every spin is reproducible.
 - **Proven fair, not assumed.** A 1,000,000-spin **χ² uniformity** suite plus edge-convergence tests pin the empirical house edges to **2.70% / 5.26% / 7.89% / 1.35%**. Fairness is a release gate, the same way a casino inspects a wheel.
 - **The full bet & pay model.** All 14 wagers at regulated odds (35:1 down to 1:1), including the American First Five basket, plus the **La Partage** and **Surrender** even-money edge-reducers.
-- **Framework-free engine.** Pure TypeScript (strict), money in integer cents, one injectable PRNG, 134 unit tests — re-skinnable and verifiable in Node.
-- **A full playable trainer.** A canvas wheel that *replays* the engine's spin (Realistic or Quick), a clickable betting mat covering **every bet** — straight-ups, outside bets, and all the inside combinations (splits, streets, corners, six-lines, First Five) — with click- and drag-to-place chips that can never exceed your bankroll, a live **expected-value advisor** that explains in plain language what each bet pays and its odds, session stats with a bankroll sparkline, toast notifications, and downloadable session CSVs. Responsive down to 390px; axe-clean WCAG 2.1 AA on every route.
+- **Framework-free engine.** Pure TypeScript (strict), money in integer cents, one injectable PRNG, 156 unit tests — re-skinnable and verifiable in Node.
+- **A full playable trainer.** A canvas wheel that *replays* the engine's spin (Realistic or Quick), a clickable betting mat covering **every bet** — straight-ups, outside bets, and all the inside combinations (splits, streets, corners, six-lines, First Five, and the single-zero zero bets: 0-splits, trios, First Four) — with click- and drag-to-place chips that can never exceed your bankroll, a live **expected-value advisor** that explains in plain language what each bet pays and its odds, session stats with a bankroll sparkline, toast notifications, and downloadable session CSVs. Responsive down to 390px; axe-clean WCAG 2.1 AA on every route.
 - **Lab · Analysis · Learn · Drills.** Detune the wheel and watch the χ² test fail in the **Lab**; compare every bet's edge and run **betting-system simulators** (Martingale · D'Alembert · Fibonacci · Paroli) with risk-of-ruin and bankroll-fan charts in **Analysis**; read how the game works, the psychology, and a long-form **history of roulette** in **Learn**; and practice in **Drills** — a quiz that teaches what every bet pays and why no bet beats the edge.
 
 ## Learn the Game
@@ -84,7 +84,7 @@ The trainer is **fully playable and responsive** — it works down to 390px and 
 ```bash
 pnpm install
 pnpm dev          # Nuxt 4 dev server (client-only SPA)
-pnpm test         # 134 Vitest unit tests, including the 1M-spin fairness proof
+pnpm test         # 156 Vitest unit tests, including the 1M-spin fairness proof
 pnpm typecheck    # strict TypeScript, no errors
 pnpm lint         # ESLint (family config)
 ```

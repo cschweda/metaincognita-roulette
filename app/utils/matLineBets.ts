@@ -115,5 +115,29 @@ export function lineBetHotspots(variant: Variant): Hotspot[] {
     })
   }
 
+  // Zero-adjacent bets (single-zero layout only — Crown Melbourne Diagram D).
+  // The 0 box spans all three rows to the LEFT of the grid, so these sit on the
+  // grid's left edge (cx = 0), straddling the gap toward the zero cell. On the
+  // double-zero layout the zero geometry differs (0 and 00 each touch other
+  // numbers), so these hotspots are not offered there.
+  if (variant === 'single') {
+    // Splits 0–3 / 0–2 / 0–1 beside the top / middle / bottom rows — split odds.
+    for (let i = 0; i <= 2; i++) {
+      spots.push({
+        type: 'split',
+        numbers: [0, numAt(0, i)],
+        cx: 0,
+        cy: i * ROWP + CH / 2, // 17 / 54 / 91
+        w: 14,
+        h: 24
+      })
+    }
+    // Trios 0–2–3 and 0–1–2: zero plus a shared row boundary — street odds.
+    spots.push({ type: 'street', numbers: [0, 2, 3], cx: 0, cy: CH + GAP / 2, w: 14, h: 16 }) // 35.5
+    spots.push({ type: 'street', numbers: [0, 1, 2], cx: 0, cy: ROWP + CH + GAP / 2, w: 14, h: 16 }) // 72.5
+    // First Four (0,1,2,3): zero plus the 1–2–3 street line — corner odds.
+    spots.push({ type: 'corner', numbers: [0, 1, 2, 3], cx: 0, cy: 108, w: 14, h: 14 })
+  }
+
   return spots
 }

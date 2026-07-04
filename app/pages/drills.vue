@@ -45,17 +45,13 @@
           {{ question.prompt }}
         </p>
 
-        <div
-          role="radiogroup"
-          aria-labelledby="drill-prompt"
-          class="flex flex-col gap-2"
-        >
+        <!-- Plain buttons, not ARIA radios: role="radio" promises roving-tabindex
+             arrow-key navigation, and a one-shot quiz answer doesn't need it. -->
+        <div class="flex flex-col gap-2">
           <button
             v-for="(choice, i) in question.choices"
             :key="i"
             type="button"
-            role="radio"
-            :aria-checked="chosenIndex === i"
             :disabled="answered"
             class="w-full text-left rounded-lg border px-4 py-3 text-sm transition-colors flex items-center justify-between gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70 disabled:cursor-default"
             :class="choiceClass(i)"
@@ -123,8 +119,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { makeDrillQuestion } from '~/utils/drills'
+import { rouletteConfig } from '~~/roulette.config'
 
 // Seed from a crypto value so every session is different, then count up so each
 // individual question stays reproducible (makeDrillQuestion is pure).
@@ -143,10 +140,40 @@ const chosenIndex = ref<number | null>(null)
 const answered = computed(() => chosenIndex.value !== null)
 const isCorrect = computed(() => chosenIndex.value === question.value.correctIndex)
 
-// Session score (no persistence for MVP).
+// Practice score — persisted under the shared training key so progress
+// survives navigation and reloads.
 const streak = ref(0)
 const correct = ref(0)
 const total = ref(0)
+
+const SCORE_KEY = rouletteConfig.storage.statsKey
+
+function loadScore(): void {
+  if (typeof localStorage === 'undefined') return
+  try {
+    const raw = localStorage.getItem(SCORE_KEY)
+    if (!raw) return
+    const d = JSON.parse(raw) as Record<string, unknown>
+    if (typeof d.correct === 'number' && typeof d.total === 'number' && typeof d.streak === 'number') {
+      correct.value = d.correct
+      total.value = d.total
+      streak.value = d.streak
+    }
+  } catch {
+    // Corrupt blob — start a fresh score.
+  }
+}
+
+function saveScore(): void {
+  if (typeof localStorage === 'undefined') return
+  try {
+    localStorage.setItem(SCORE_KEY, JSON.stringify({ correct: correct.value, total: total.value, streak: streak.value }))
+  } catch {
+    // Storage full — the score simply stays in memory for this visit.
+  }
+}
+
+onMounted(loadScore)
 
 function answer(i: number) {
   if (answered.value) return
@@ -158,6 +185,7 @@ function answer(i: number) {
   } else {
     streak.value = 0
   }
+  saveScore()
 }
 
 function next() {

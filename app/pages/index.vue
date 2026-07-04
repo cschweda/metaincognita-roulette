@@ -46,6 +46,11 @@ async function startGame() {
 async function resumeSession() {
   await navigateTo('/wheel')
 }
+
+function discardSession() {
+  store.clearSession()
+  hasResume.value = false
+}
 </script>
 
 <template>
@@ -73,14 +78,24 @@ async function resumeSession() {
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span class="text-sm text-emerald-300 font-medium">Session saved — pick up where you left off.</span>
           </div>
-          <UButton
-            size="sm"
-            variant="outline"
-            color="success"
-            label="Resume session"
-            icon="i-lucide-play"
-            @click="resumeSession"
-          />
+          <div class="flex items-center gap-2 shrink-0">
+            <UButton
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              label="Discard"
+              icon="i-lucide-trash-2"
+              @click="discardSession"
+            />
+            <UButton
+              size="sm"
+              variant="outline"
+              color="success"
+              label="Resume session"
+              icon="i-lucide-play"
+              @click="resumeSession"
+            />
+          </div>
         </div>
 
         <!-- Hero Config -->

@@ -21,6 +21,21 @@ describe('coverage', () => {
     expect(coverage({ type: 'column', numbers: COLUMNS[0]!, stakeCents: 100 }).has(34)).toBe(true)
     expect(coverage({ type: 'dozen', numbers: DOZENS[2]!, stakeCents: 100 }).has(25)).toBe(true)
   })
+
+  it('memoizes coverage sets — equivalent bets share one Set (hot-loop perf)', () => {
+    // Million-spin sims call settleBet → coverage per spin; reallocating an
+    // 18-element Set every time dominates the cost. Same type+numbers must
+    // return the same (immutable) instance regardless of stake.
+    expect(coverage({ type: 'red', numbers: [], stakeCents: 100 }))
+      .toBe(coverage({ type: 'red', numbers: [], stakeCents: 9900 }))
+    expect(coverage({ type: 'split', numbers: [7, 8], stakeCents: 100 }))
+      .toBe(coverage({ type: 'split', numbers: [7, 8], stakeCents: 500 }))
+    expect(coverage({ type: 'firstFive', numbers: [0, '00', 1, 2, 3], stakeCents: 100 }))
+      .toBe(coverage({ type: 'firstFive', numbers: [0, '00', 1, 2, 3], stakeCents: 200 }))
+    // Different numbers must NOT share.
+    expect(coverage({ type: 'split', numbers: [7, 8], stakeCents: 100 }))
+      .not.toBe(coverage({ type: 'split', numbers: [8, 9], stakeCents: 100 }))
+  })
 })
 
 describe('settlement', () => {

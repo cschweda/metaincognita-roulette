@@ -38,15 +38,17 @@ const emit = defineEmits<{
 
 const chips = rouletteConfig.chips as readonly number[]
 
+// Casino color order, applied by tray position — not by hardcoded cent values,
+// so reconfiguring rouletteConfig.chips can't leave a chip styleless.
+const CHIP_STYLES = ['chip-white', 'chip-red', 'chip-green', 'chip-black', 'chip-purple'] as const
+
 function chipClass(cents: number): Record<string, boolean> {
+  const idx = Math.max(0, chips.indexOf(cents))
+  const style = CHIP_STYLES[idx % CHIP_STYLES.length]!
   return {
+    [style]: true,
     'chip-selected': cents === props.selected && cents <= props.maxCents,
-    'chip-disabled': cents > props.maxCents,
-    'chip-white': cents === 100,
-    'chip-red': cents === 500,
-    'chip-green': cents === 2_500,
-    'chip-black': cents === 10_000,
-    'chip-purple': cents === 50_000
+    'chip-disabled': cents > props.maxCents
   }
 }
 </script>

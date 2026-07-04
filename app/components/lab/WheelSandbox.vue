@@ -231,13 +231,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouletteStore } from '~/stores/roulette'
 import { runFrequencies, chiSquare, measureEdge } from '~/engine/sim'
 import { WHEEL_ORDER, colorOf, pocketCount } from '~/engine/wheel'
 import type { Bet, Rules } from '~/engine/bets'
 import { chiCritical, isUniform } from './sandbox'
 import { formatPercent } from '~/utils/format'
+import { nextPaint } from '~/utils/nextPaint'
 
 interface SimResult {
   counts: number[]
@@ -313,7 +314,9 @@ const histBars = computed(() => {
 async function runSim() {
   running.value = true
   result.value = null
-  await nextTick()
+  // Let the "Running…" placeholder actually paint before the synchronous
+  // million-spin compute blocks the main thread (nextTick fires pre-paint).
+  await nextPaint()
 
   const cond = biasPct.value > 0
     ? { biasStrength: biasPct.value / 100, biasCenter: 7, biasWidth: 5 }

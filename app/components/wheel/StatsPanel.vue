@@ -87,8 +87,8 @@ const H = 46
 const gradId = 'spark-grad'
 
 const net = computed(() => store.sessionStats.netCents)
-const wins = computed(() => store.spinHistory.filter(s => s.netCents > 0).length)
-const losses = computed(() => store.spinHistory.filter(s => s.netCents < 0).length)
+const wins = computed(() => store.sessionStats.wins)
+const losses = computed(() => store.sessionStats.losses)
 
 const up = computed(() => {
   const v = store.bankrollHistory

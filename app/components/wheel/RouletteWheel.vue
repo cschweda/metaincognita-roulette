@@ -50,6 +50,10 @@ const COL: Record<string, string> = { red: '#c1272d', black: '#1a1a1a', green: '
 
 let raf: number | null = null
 let isSpinning = false
+// Force-completes the in-flight animated spin (set only while one is running).
+// The engine has already decided the pocket — the replay must never hold the
+// game hostage, so unmount/variant-change finish the spin instead of dropping it.
+let finishPending: (() => void) | null = null
 
 function getCtx(): CanvasRenderingContext2D | null {
   return canvasRef.value?.getContext('2d') ?? null
@@ -240,6 +244,11 @@ function cancelSpin(): void {
   }
 }
 
+/** Settle an in-flight spin immediately (final frame, `settled` emit, resolve). */
+function settleNow(): void {
+  finishPending?.()
+}
+
 function isReducedMotion(): boolean {
   if (props.reducedMotion) return true
   if (typeof window !== 'undefined' && window.matchMedia) {
@@ -296,14 +305,20 @@ function spinTo(pocket: Pocket): Promise<void> {
     const easeOut = (x: number): number => 1 - Math.pow(1 - x, 2.2)
     const t0 = performance.now()
 
+    const finish = (): void => {
+      finishPending = null
+      cancelSpin()
+      drawWheel(rotorAtRest, { a: A_final, r: R_REST, lift: 0 }, targetIdx)
+      emit('settled', pocket)
+      isSpinning = false
+      resolve()
+    }
+    finishPending = finish
+
     function frame(now: number): void {
       const t = (now - t0) / 1000
       if (t >= Ttot) {
-        drawWheel(rotorAtRest, { a: A_final, r: R_REST, lift: 0 }, targetIdx)
-        emit('settled', pocket)
-        isSpinning = false
-        raf = null
-        resolve()
+        finish()
         return
       }
 
@@ -346,13 +361,16 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  // Resolve (not abandon) any in-flight spin so the caller's commit always
+  // runs — otherwise navigating away mid-spin left the game stuck 'spinning'.
+  settleNow()
   cancelSpin()
 })
 
 // Redraw idle wheel when variant changes
 watch(() => props.variant, () => {
+  settleNow()
   cancelSpin()
-  isSpinning = false
   drawWheel(0, null)
 })
 </script>

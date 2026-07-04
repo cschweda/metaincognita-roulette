@@ -14,8 +14,9 @@ export function betLabel(bet: Bet): string {
     case 'high': return '19–36'
     case 'straight': return `Straight ${n[0]}`
     case 'split': return `Split ${n.join('/')}`
-    case 'street': return `Street ${n[0]}–${n[n.length - 1]}`
-    case 'corner': return `Corner ${n[0]}–${n[n.length - 1]}`
+    // Zero-adjacent three/four-number bets carry table names, not grid shapes.
+    case 'street': return n.includes(0) ? `Trio ${n.join('/')}` : `Street ${n[0]}–${n[n.length - 1]}`
+    case 'corner': return n.includes(0) ? 'First Four' : `Corner ${n[0]}–${n[n.length - 1]}`
     case 'sixline': return `Six line ${n[0]}–${n[n.length - 1]}`
     case 'firstFive': return 'First Five'
     case 'dozen': return n[0] === 1 ? '1st 12' : n[0] === 13 ? '2nd 12' : '3rd 12'

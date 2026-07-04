@@ -454,12 +454,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import type { Variant } from '~/engine/wheel'
 import type { EvenMoneyRule, BetType } from '~/engine/bets'
 import { type SystemId, type SystemConfig, type TrialsResult, runTrials } from '~/engine/systems'
 import { rouletteConfig } from '~~/roulette.config'
 import { formatCents } from '~/utils/format'
+import { nextPaint } from '~/utils/nextPaint'
 
 // ── Controls ──────────────────────────────────────────────────────────────────
 const chips = rouletteConfig.chips
@@ -497,7 +498,6 @@ const targetSnapshot = ref<number | undefined>(undefined)
 async function run() {
   running.value = true
   result.value = null
-  await nextTick()
 
   const start = Math.max(1, Math.round((startDollars.value || 0))) * 100
   const tableMax = Math.max(1, Math.round((tableMaxDollars.value || 0))) * 100
@@ -524,8 +524,9 @@ async function run() {
   startBankrollCents.value = start
   targetSnapshot.value = target
 
-  // Let the spinner paint before the (synchronous) heavy compute.
-  await nextTick()
+  // Let the spinner paint before the (synchronous) heavy compute — nextTick
+  // resolves pre-paint, so it must be a real paint-yield.
+  await nextPaint()
   result.value = runTrials(config, trials.value, seed)
   running.value = false
 }

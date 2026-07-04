@@ -48,7 +48,7 @@ export const useRouletteStore = defineStore('roulette', {
     selectedChipCents: rouletteConfig.chips[0] as number,
     bets: [] as Bet[],
     spinHistory: [] as SpinRecord[],
-    sessionStats: { spins: 0, wageredCents: 0, netCents: 0 } as SessionStats,
+    sessionStats: { spins: 0, wageredCents: 0, netCents: 0, wins: 0, losses: 0 } as SessionStats,
     bankrollHistory: [] as number[],
     sessionLog: [] as SpinLogEntry[],
     lastRoundBets: [] as Bet[],
@@ -76,7 +76,7 @@ export const useRouletteStore = defineStore('roulette', {
       this.selectedChipCents = args.selectedChipCents
       this.bets = []
       this.spinHistory = []
-      this.sessionStats = { spins: 0, wageredCents: 0, netCents: 0 }
+      this.sessionStats = { spins: 0, wageredCents: 0, netCents: 0, wins: 0, losses: 0 }
       this.bankrollHistory = [args.bankrollCents]
       this.sessionLog = []
       this.wheelCondition = {}
@@ -166,7 +166,9 @@ export const useRouletteStore = defineStore('roulette', {
       this.sessionStats.spins += 1
       this.sessionStats.wageredCents += result.totalStakeCents
       this.sessionStats.netCents += result.netCents
-      this.sessionLog.push({ pocket: result.pocket, stakeCents: result.totalStakeCents, returnCents: result.totalReturnCents, netCents: result.netCents, bankrollCents: this.bankrollCents })
+      if (result.netCents > 0) this.sessionStats.wins += 1
+      else if (result.netCents < 0) this.sessionStats.losses += 1
+      this.sessionLog.push({ event: 'spin', pocket: result.pocket, stakeCents: result.totalStakeCents, returnCents: result.totalReturnCents, netCents: result.netCents, bankrollCents: this.bankrollCents })
       this.sessionLog = this.sessionLog.slice(-500)
       this.revealPocket = result.pocket
       this.lastRoundResult = result
@@ -239,6 +241,10 @@ export const useRouletteStore = defineStore('roulette', {
       this.bankrollCents += cents
       this.bankrollHistory.push(this.bankrollCents)
       this.bankrollHistory = this.bankrollHistory.slice(-60)
+      // Log the buy-in so the exported CSV's bankroll column reconciles
+      // row-to-row instead of jumping unexplained between spins.
+      this.sessionLog.push({ event: 'rebuy', pocket: null, stakeCents: 0, returnCents: cents, netCents: 0, bankrollCents: this.bankrollCents })
+      this.sessionLog = this.sessionLog.slice(-500)
       if (this.selectedChipCents === 0) this.selectedChipCents = rouletteConfig.chips[0]!
       this.saveToLocalStorage()
     }

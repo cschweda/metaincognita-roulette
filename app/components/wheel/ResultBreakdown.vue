@@ -43,7 +43,7 @@ import { computed } from 'vue'
 import { useRouletteStore } from '~/stores/roulette'
 import { colorOf } from '~/engine/wheel'
 import { betLabel } from '~/utils/betLabel'
-import { formatCents, formatSignedCents } from '~/utils/format'
+import { formatSignedCents } from '~/utils/format'
 import type { PerBetResult } from '~/engine/round'
 
 const store = useRouletteStore()
@@ -55,7 +55,7 @@ const pocketColor = computed(() => (result.value ? COLORS[colorOf(result.value.p
 function outcomeText(p: PerBetResult): string {
   if (p.won) return formatSignedCents(p.returnCents - p.bet.stakeCents)
   if (p.returnCents > 0) return '½ back'
-  return '−' + formatCents(p.bet.stakeCents)
+  return formatSignedCents(-p.bet.stakeCents)
 }
 function outcomeClass(p: PerBetResult): string {
   if (p.won) return 'text-emerald-400'

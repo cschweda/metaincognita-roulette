@@ -7,30 +7,17 @@ const isSetup = computed(() => route.path === '/')
 const isWheel = computed(() => route.path === '/wheel')
 const isSubPage = computed(() => route.path === '/history' || route.path === '/analysis' || route.path === '/learn' || route.path === '/lab' || route.path === '/drills')
 
-// Back button logic
-const showLeaveConfirm = ref(false)
-
+// Back is never destructive: the session autosaves on every mutation, and the
+// setup page offers Resume/Discard for an existing one.
 function handleBack() {
   if (isWheel.value) {
-    // On wheel: warn about losing session
-    showLeaveConfirm.value = true
+    router.push('/')
   } else if (isSubPage.value) {
-    // On sub-pages: go back (game state already saved)
     router.back()
   }
 }
 
-function confirmLeave() {
-  store.clearSession()
-  showLeaveConfirm.value = false
-  router.push('/')
-}
-
-// Save game state before navigating to sub-pages
-function navigateTo(path: string) {
-  if (store.phase !== 'setup') {
-    store.saveToLocalStorage()
-  }
+function goTo(path: string) {
   router.push(path)
 }
 
@@ -84,7 +71,7 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
             : 'text-neutral-400 hover:text-neutral-200'"
           aria-label="History"
           title="History"
-          @click="navigateTo('/history')"
+          @click="goTo('/history')"
         >
           <UIcon
             name="i-lucide-scroll-text"
@@ -99,7 +86,7 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
             : 'text-neutral-400 hover:text-neutral-200'"
           aria-label="Analysis"
           title="Analysis"
-          @click="navigateTo('/analysis')"
+          @click="goTo('/analysis')"
         >
           <UIcon
             name="i-lucide-chart-no-axes-combined"
@@ -114,7 +101,7 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
             : 'text-neutral-400 hover:text-neutral-200'"
           aria-label="Learn"
           title="Learn"
-          @click="navigateTo('/learn')"
+          @click="goTo('/learn')"
         >
           <UIcon
             name="i-lucide-graduation-cap"
@@ -129,7 +116,7 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
             : 'text-neutral-400 hover:text-neutral-200'"
           aria-label="Lab"
           title="Lab"
-          @click="navigateTo('/lab')"
+          @click="goTo('/lab')"
         >
           <UIcon
             name="i-lucide-flask-conical"
@@ -144,7 +131,7 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
             : 'text-neutral-400 hover:text-neutral-200'"
           aria-label="Drills"
           title="Drills"
-          @click="navigateTo('/drills')"
+          @click="goTo('/drills')"
         >
           <UIcon
             name="i-lucide-target"
@@ -171,32 +158,6 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
         </a>
       </div>
     </nav>
-
-    <!-- Leave wheel confirmation modal -->
-    <UModal
-      v-model:open="showLeaveConfirm"
-      title="Reset Session?"
-      :ui="{ footer: 'justify-end' }"
-    >
-      <template #body>
-        <p class="text-neutral-400 text-sm">
-          Your current session will be lost if you reset. Are you sure you want to return to setup?
-        </p>
-      </template>
-      <template #footer>
-        <UButton
-          variant="outline"
-          color="neutral"
-          label="Cancel"
-          @click="showLeaveConfirm = false"
-        />
-        <UButton
-          color="error"
-          label="Reset Session"
-          @click="confirmLeave"
-        />
-      </template>
-    </UModal>
 
     <FlashToast />
   </div>

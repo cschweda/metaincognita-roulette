@@ -21,20 +21,58 @@ describe('numAt', () => {
 })
 
 describe('lineBetHotspots — counts', () => {
-  it('single-zero: 102 hotspots and NO First Five', () => {
+  it('single-zero: 108 hotspots (incl. zero splits, trios, First Four) and NO First Five', () => {
     const spots = lineBetHotspots('single')
-    expect(byType(spots, 'split').length).toBe(33 + 24) // 57
-    expect(byType(spots, 'corner').length).toBe(22)
-    expect(byType(spots, 'street').length).toBe(12)
+    expect(byType(spots, 'split').length).toBe(33 + 24 + 3) // + 0–1, 0–2, 0–3
+    expect(byType(spots, 'corner').length).toBe(22 + 1) // + First Four (0,1,2,3)
+    expect(byType(spots, 'street').length).toBe(12 + 2) // + trios 0–1–2, 0–2–3
     expect(byType(spots, 'sixline').length).toBe(11)
     expect(byType(spots, 'firstFive').length).toBe(0)
-    expect(spots.length).toBe(102)
+    expect(spots.length).toBe(108)
   })
 
   it('double-zero: 103 hotspots including a single First Five', () => {
     const spots = lineBetHotspots('double')
     expect(byType(spots, 'firstFive').length).toBe(1)
     expect(spots.length).toBe(103)
+  })
+})
+
+describe('lineBetHotspots — single-zero zero-adjacent bets (Crown layout)', () => {
+  const single = lineBetHotspots('single')
+
+  it('offers the three zero splits at regulated split odds', () => {
+    expect(withNumbers(single, 'split', [0, 1])).toBeDefined()
+    expect(withNumbers(single, 'split', [0, 2])).toBeDefined()
+    expect(withNumbers(single, 'split', [0, 3])).toBeDefined()
+  })
+
+  it('offers both trios as street-priced three-number bets', () => {
+    expect(withNumbers(single, 'street', [0, 1, 2])).toBeDefined()
+    expect(withNumbers(single, 'street', [0, 2, 3])).toBeDefined()
+  })
+
+  it('offers the First Four (0,1,2,3) at corner odds', () => {
+    expect(withNumbers(single, 'corner', [0, 1, 2, 3])).toBeDefined()
+  })
+
+  it('places them on the zero boundary: x at the grid left edge, rows top→bottom 3/2/1', () => {
+    expect(withNumbers(single, 'split', [0, 3])!.cy).toBe(17) // top row (3)
+    expect(withNumbers(single, 'split', [0, 2])!.cy).toBe(54) // middle row (2)
+    expect(withNumbers(single, 'split', [0, 1])!.cy).toBe(91) // bottom row (1)
+    expect(withNumbers(single, 'street', [0, 2, 3])!.cy).toBe(35.5) // 3/2 boundary
+    expect(withNumbers(single, 'street', [0, 1, 2])!.cy).toBe(72.5) // 2/1 boundary
+    for (const numbers of [[0, 1], [0, 2], [0, 3]] as Pocket[][]) {
+      expect(withNumbers(single, 'split', numbers)!.cx).toBe(0)
+    }
+    expect(withNumbers(single, 'corner', [0, 1, 2, 3])!.cx).toBe(0)
+  })
+
+  it('does not offer them on the double-zero layout (different zero geometry)', () => {
+    const double = lineBetHotspots('double')
+    expect(withNumbers(double, 'split', [0, 1])).toBeUndefined()
+    expect(withNumbers(double, 'street', [0, 1, 2])).toBeUndefined()
+    expect(withNumbers(double, 'corner', [0, 1, 2, 3])).toBeUndefined()
   })
 })
 

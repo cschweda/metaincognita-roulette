@@ -25,6 +25,17 @@
         >{{ resultText }}</span>
       </div>
       <div class="flex-1 min-w-0 flex items-center justify-end gap-2">
+        <span
+          v-if="wheelBiased"
+          class="biased-badge shrink-0"
+          title="The Lab applied a biased wheel at this table — outcomes favor a sector and the published edge no longer applies. Restore a true wheel in the Lab."
+        >
+          <UIcon
+            name="i-lucide-triangle-alert"
+            class="w-3 h-3"
+          />
+          <span class="hidden sm:inline">Biased wheel</span>
+        </span>
         <span class="text-xs text-neutral-400 truncate min-w-0"><span class="hidden sm:inline">{{ store.preset.label }} · </span><span class="font-mono text-primary-400">{{ store.preset.edgePct.toFixed(2) }}%</span></span>
         <button
           type="button"
@@ -138,7 +149,7 @@
       <template #body>
         <p class="text-sm text-neutral-300">
           Your bankroll is empty — down
-          <span class="font-mono text-rose-400">{{ formatSignedCents(store.sessionStats.netCents) }}</span>
+          <span class="font-mono text-rose-400">{{ formatCents(Math.abs(store.sessionStats.netCents)) }}</span>
           over {{ store.sessionStats.spins }} spins. What would you like to do?
         </p>
       </template>
@@ -219,6 +230,10 @@ const { scale: matScale, naturalWidth: matNaturalWidth, naturalHeight: matNatura
 const matScaledWidth = computed(() => Math.round(matNaturalWidth.value * matScale.value))
 const matScaledHeight = computed(() => Math.round(matNaturalHeight.value * matScale.value))
 
+// The Lab can rig the table wheel ("Apply this wheel at the table") — an app
+// built on honesty must say so where the betting happens.
+const wheelBiased = computed(() => (store.wheelCondition.biasStrength ?? 0) > 0)
+
 const resultTone = computed<'none' | 'win' | 'loss' | 'neutral'>(() => {
   if (lastNet.value === null || store.phase === 'spinning') return 'none'
   if (lastNet.value > 0) return 'win'
@@ -257,6 +272,9 @@ onMounted(() => {
     navigateTo('/')
     return
   }
+  // Belt-and-braces: a 'spinning' phase can't survive navigation (the wheel
+  // settles on unmount), but if it ever did, don't leave the table locked.
+  if (store.phase === 'spinning') store.readyForNextSpin()
   reducedMotion.value = typeof window !== 'undefined'
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (store.bankrollCents === 0 && store.totalStakedCents === 0) showBroke.value = true
@@ -359,6 +377,20 @@ async function spin() {
   background: rgba(148, 163, 184, 0.12);
   color: #94a3b8;
   border-color: rgba(148, 163, 184, 0.25);
+}
+
+.biased-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.45);
+  background: rgba(244, 63, 94, 0.12);
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
 }
 
 .speed-toggle {

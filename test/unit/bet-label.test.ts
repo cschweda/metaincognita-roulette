@@ -20,6 +20,13 @@ describe('betLabel', () => {
     expect(betLabel(b('firstFive', [0, '00', 1, 2, 3]))).toBe('First Five')
   })
 
+  it('names the zero-adjacent bets by their table names, not grid shapes', () => {
+    expect(betLabel(b('split', [0, 2]))).toBe('Split 0/2')
+    expect(betLabel(b('street', [0, 1, 2]))).toBe('Trio 0/1/2')
+    expect(betLabel(b('street', [0, 2, 3]))).toBe('Trio 0/2/3')
+    expect(betLabel(b('corner', [0, 1, 2, 3]))).toBe('First Four')
+  })
+
   it('names columns and dozens by position', () => {
     expect(betLabel(b('dozen', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]))).toBe('1st 12')
     expect(betLabel(b('dozen', [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]))).toBe('2nd 12')

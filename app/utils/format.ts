@@ -14,7 +14,8 @@ export function formatRatio(ratio: [number, number]): string {
 }
 
 export function formatSignedCents(cents: number): string {
-  const prefix = cents >= 0 ? '+' : ''
+  if (cents === 0) return formatCents(0)
+  const prefix = cents > 0 ? '+' : '−'
   return `${prefix}${formatCents(Math.abs(cents))}`
 }
 

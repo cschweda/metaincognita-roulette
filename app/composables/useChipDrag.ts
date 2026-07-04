@@ -28,16 +28,25 @@ export function useChipDrag(onDrop: (descriptor: { type: BetType, numbers: Pocke
     y.value = ev.clientY
     if (!moved && Math.hypot(ev.clientX - startX, ev.clientY - startY) > 6) moved = true
   }
-  function onUp(ev: PointerEvent) {
+  function cleanup() {
     window.removeEventListener('pointermove', onMove)
     window.removeEventListener('pointerup', onUp)
+    window.removeEventListener('pointercancel', onCancel)
     dragging.value = false
+  }
+  function onUp(ev: PointerEvent) {
+    cleanup()
     if (moved) {
       const el = document.elementFromPoint(ev.clientX, ev.clientY) as Element | null
       const zoneEl = el?.closest('[data-zone]')
       const descriptor = parseZone(zoneEl?.getAttribute('data-zone') ?? null)
       if (descriptor) onDrop(descriptor, chipCents.value)
     }
+  }
+  // The browser can cancel a pointer stream (gesture takeover, incoming call);
+  // without this, the ghost chip stayed stuck on screen and listeners leaked.
+  function onCancel() {
+    cleanup()
   }
   function start(cents: number, ev: PointerEvent) {
     chipCents.value = cents
@@ -49,6 +58,7 @@ export function useChipDrag(onDrop: (descriptor: { type: BetType, numbers: Pocke
     dragging.value = true
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onCancel)
   }
   return { dragging, chipCents, x, y, start }
 }

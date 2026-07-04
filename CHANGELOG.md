@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Zero-adjacent bets on the single-zero mat** — the splits 0–1 / 0–2 / 0–3, the trios 0–1–2 and 0–2–3 (street odds), and the **First Four** 0-1-2-3 (corner odds), per the Crown Melbourne layout. Hotspots straddle the zero boundary and carry their table names ("Trio 0/1/2", "First Four") in labels and the EV explainer.
+- A **"Biased wheel" badge** in the play-screen header whenever the Lab's rigged wheel is applied at the table — the app's honesty shouldn't stop at the Lab door.
+- **Durable win/loss counters** in session stats. The W–L record previously derived from the 50-spin history window and drifted on longer sessions; old saved sessions migrate automatically.
+- **Rebuys are logged** in the session log and CSV (new `event` column), so the bankroll column reconciles row-to-row instead of jumping unexplained after a buy-in.
+- A **Discard button** on the setup page's resume banner — the explicit home for ending a saved session.
+- **Drills score persists** (correct / total / streak) across visits and reloads under the training storage key.
+- Playwright E2E for the mid-spin navigation regression, inside-bet hotspot placement, and the broke-modal rebuy flow.
 - Playwright E2E for the money path + GitHub Actions CI.
 - **Markers on the bankroll sparkline** at each spin, so you can see where the session turned up or down.
 - **Confirmation toasts for every player action** — placing a bet, clearing, repeating, buying in, and toggling spin speed.
@@ -23,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Back from the table is no longer destructive.** It now simply returns to setup (the session autosaves on every action, and setup offers Resume / Discard); the old "Reset Session?" modal — whose only affirmative action wiped the session — is gone.
+- The Lab's χ² verdict now uses the **Wilson–Hilferty** critical value (matches the 99.9% table within ±0.1) instead of a normal approximation that flagged ~1% of true wheels as biased.
+- `coverage()` memoizes its pocket sets, cutting the betting-system simulator, Lab runs, and the million-spin fairness proof roughly in half (unit suite: ~6.2s → ~3.9s).
+- Chip tray colors are assigned by tray position rather than hardcoded cent values, so re-tiering `rouletteConfig.chips` can't leave a chip unstyled.
 - The app is now **fully responsive and playable down to 390px wide** (the family guideline) while staying perfect on tablet and desktop — no horizontal page scrolling at any width. The fixed-geometry betting mat **scales to fit** narrow screens (preserving every pixel-accurate inside-bet hotspot for click and drag), the wheel canvas shrinks fluidly, and the play-screen header and bottom navigation compact gracefully on small screens.
 - The **Spin button** is now high-contrast casino gold instead of pink.
 - Enlarged the **Staked** total and the ready-to-spin pulse for at-a-glance visibility.
@@ -32,6 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Navigating away mid-spin no longer soft-locks the game.** The wheel now finishes (rather than abandons) an in-flight replay on unmount, so the round always settles: the bankroll commits, a result toast still fires, and returning to the table finds it playable instead of stuck on "Spinning…" until a hard reload.
+- **Losses render with a minus sign.** `formatSignedCents(-500)` produced "$5" — session net and P&L showed losses distinguishable only by red color (a WCAG 1.4.1 use-of-color failure). Losses now read "−$5".
+- The **"Running…" placeholder actually paints** before the Lab and betting-system simulators block the main thread (`nextTick` resolves pre-paint; they now yield through a real rAF+timer paint boundary).
+- A cancelled pointer stream (browser gesture takeover, incoming call) no longer leaves a **ghost drag chip** stuck on screen with leaked listeners.
+- Saved-session validation is stricter: negative bankrolls, unknown bet types, NaN/negative stakes, and bogus pocket numbers are rejected instead of flowing into the engine.
+- Drills answer buttons no longer claim `role="radio"` without the arrow-key behavior that role promises — they are plain buttons.
 - Accessibility: dropped a redundant `aria-label` on the Download CSV buttons (WCAG 2.5.3 label-in-name). The whole app is now **axe-clean (axe-core) and Lighthouse a11y 100** on every route.
 - Toasts now update in place when several fire in quick succession (a stale `<Transition>` element could leave the previous message stuck on screen).
 

@@ -35,7 +35,7 @@ export const COLUMNS: number[][] = [
 ]
 export const DOZENS: number[][] = [range(1, 12), range(13, 24), range(25, 36)]
 
-export function coverage(bet: Bet): Set<Pocket> {
+function computeCoverage(bet: Bet): ReadonlySet<Pocket> {
   switch (bet.type) {
     case 'red': return new Set<Pocket>([...REDS])
     case 'black': return new Set<Pocket>(range(1, 36).filter(n => !REDS.has(n)))
@@ -45,6 +45,21 @@ export function coverage(bet: Bet): Set<Pocket> {
     case 'high': return new Set<Pocket>(range(19, 36))
     default: return new Set<Pocket>(bet.numbers)
   }
+}
+
+// Memoized per type+numbers: settleBet runs once per simulated spin, and the
+// million-spin proofs/sims would otherwise reallocate an 18-element Set each
+// time. Returned sets are shared — treat them as immutable.
+const coverageCache = new Map<string, ReadonlySet<Pocket>>()
+
+export function coverage(bet: Bet): ReadonlySet<Pocket> {
+  const key = bet.type + ':' + bet.numbers.join(',')
+  let set = coverageCache.get(key)
+  if (!set) {
+    set = computeCoverage(bet)
+    coverageCache.set(key, set)
+  }
+  return set
 }
 
 export function covers(bet: Bet, result: Pocket): boolean {
