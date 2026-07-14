@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The hub exit — a way back to the floor.** A gold **METAINCOGNITA** wordmark now sits at the far left of the top status bar on every route, linking to [metaincognita.com](https://metaincognita.com) — the floor where all nine Metaincognita games live. Until now the hub linked out to every game and not one of them linked home; a player deep in a session had no way back but the browser's back button. It is a real `<a href>`, opens in the **same tab** (an exit, not a side trip), is never hidden or gated, and **never confirms** — it destroys nothing, and the point is that you can always leave. Suite chrome, per METAINCOGNITA-GUIDELINES v1.2 §5.
+
 - **Zero-adjacent bets on the single-zero mat** — the splits 0–1 / 0–2 / 0–3, the trios 0–1–2 and 0–2–3 (street odds), and the **First Four** 0-1-2-3 (corner odds), per the Crown Melbourne layout. Hotspots straddle the zero boundary and carry their table names ("Trio 0/1/2", "First Four") in labels and the EV explainer.
 - A **"Biased wheel" badge** in the play-screen header whenever the Lab's rigged wheel is applied at the table — the app's honesty shouldn't stop at the Lab door.
 - **Durable win/loss counters** in session stats. The W–L record previously derived from the 50-spin history window and drifted on longer sessions; old saved sessions migrate automatically.
