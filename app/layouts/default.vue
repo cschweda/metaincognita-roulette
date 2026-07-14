@@ -29,6 +29,13 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
     <!-- Top status bar -->
     <nav class="h-9 flex items-center justify-between px-3 bg-neutral-900 border-b border-neutral-800 shrink-0 z-50">
       <div class="flex items-center gap-2">
+        <!-- Out of the trainer entirely, on every route. Distinct from the Back
+             button beside it, which only moves around inside this app. -->
+        <AppHubLink />
+        <span
+          class="h-4 w-px bg-neutral-800"
+          aria-hidden="true"
+        />
         <button
           v-if="!isSetup"
           class="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-200 transition-colors"
@@ -52,7 +59,11 @@ const hasActiveSession = computed(() => store.phase !== 'setup')
         class="flex items-center gap-1"
       >
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        <span class="text-[10px] text-neutral-400">Session active</span>
+        <!-- Below 640px the bar has to give something up to seat the hub exit,
+             and the exit never degrades — prominence is the point of it.
+             sr-only, not hidden: the status stays in the a11y tree, and the
+             pulsing dot still carries it visually. -->
+        <span class="text-[10px] text-neutral-400 max-sm:sr-only">Session active</span>
       </div>
     </nav>
 
