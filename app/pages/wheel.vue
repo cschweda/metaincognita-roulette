@@ -183,7 +183,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouletteStore } from '~/stores/roulette'
 import { useFitScale } from '~/composables/useFitScale'
-import { formatCents, formatSignedCents } from '~/utils/format'
+import { formatCents } from '~/utils/format'
 import { downloadText } from '~/utils/download'
 import { sessionToCsv } from '~/utils/sessionCsv'
 import { betLabel } from '~/utils/betLabel'
