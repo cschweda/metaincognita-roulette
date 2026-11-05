@@ -11,10 +11,13 @@ export default defineNuxtConfig({
         { property: 'og:title', content: 'Roulette Trainer' },
         { property: 'og:description', content: 'A real forward-physics wheel, proven fair. Learn why you can\'t beat the wheel.' },
         { property: 'og:type', content: 'website' },
-        { property: 'og:image', content: '/og-image.png' },
+        { property: 'og:image', content: 'https://roulette.metaincognita.com/og-image.png' },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
-        { name: 'twitter:card', content: 'summary_large_image' }
+        { property: 'og:image:alt', content: 'Roulette Trainer — a Metaincognita casino simulator' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:image', content: 'https://roulette.metaincognita.com/og-image.png' },
+        { name: 'twitter:image:alt', content: 'Roulette Trainer — a Metaincognita casino simulator' }
       ],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/og-image.svg' }]
     }
